@@ -1,0 +1,13 @@
+{
+  "utc": "2025-10-24T06:51:20Z",
+  "has_descriptor": false,
+  "has_prost_rs": true,
+  "has_opcodes": true,
+  "has_capture": true,
+  "stream_probe": {
+    "present": true,
+    "probed_bytes": 93797,
+    "plausible_headers": 275
+  },
+  "status": "ready"
+}
