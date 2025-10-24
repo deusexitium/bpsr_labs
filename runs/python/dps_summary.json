@@ -1,0 +1,51 @@
+{
+  "total_damage": 27354,
+  "hits": 19,
+  "crits": 0,
+  "active_duration_s": 5.0,
+  "dps": 5470.8,
+  "skills": {
+    "1401": {
+      "damage": 488,
+      "hits": 1,
+      "crits": 0
+    },
+    "1402": {
+      "damage": 1953,
+      "hits": 6,
+      "crits": 0
+    },
+    "1403": {
+      "damage": 1441,
+      "hits": 5,
+      "crits": 0
+    },
+    "1419": {
+      "damage": 22410,
+      "hits": 6,
+      "crits": 0
+    },
+    "2031104": {
+      "damage": 1062,
+      "hits": 1,
+      "crits": 0
+    }
+  },
+  "targets": {
+    "4587584": {
+      "damage": 9875,
+      "hits": 8,
+      "crits": 0
+    },
+    "4718656": {
+      "damage": 9367,
+      "hits": 7,
+      "crits": 0
+    },
+    "4980800": {
+      "damage": 8112,
+      "hits": 4,
+      "crits": 0
+    }
+  }
+}

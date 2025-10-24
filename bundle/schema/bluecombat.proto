@@ -1,0 +1,510 @@
+syntax = "proto3";
+
+package blueprotobuf_package;
+
+message SyncNearEntities {
+  repeated Entity appear = 1;
+  repeated DisappearEntity disappear = 2;
+}
+
+message Entity {
+  optional int64 uuid = 1;
+  optional EEntityType ent_type = 2;
+  AttrCollection attrs = 3;
+  TempAttrCollection temp_attrs = 4;
+  ActorBodyPartInfos body_part_infos = 5;
+  SeqPassiveSkillInfo passive_skill_infos = 6;
+  BuffInfoSync buff_infos = 7;
+  BuffEffectSync buff_effect = 8;
+  optional EAppearType appear_type = 9;
+  map<int64, MagneticQueueAppearInfo> magnetic_ride_queue_change_info_dict = 10;
+}
+
+message MagneticQueueAppearInfo {
+  repeated int64 passenger_uuid_list = 1;
+  optional bool is_circle = 2;
+  optional float path_length = 3;
+}
+
+message DisappearEntity {
+  optional int64 uuid = 1;
+  optional EDisappearType type = 2;
+}
+
+message AttrCollection {
+  optional int64 uuid = 1;
+  repeated Attr attrs = 2;
+  repeated MapAttr map_attrs = 3;
+}
+
+message Attr {
+  optional int32 id = 1;
+  optional bytes raw_data = 2;
+}
+
+message MapAttr {
+  optional bool is_clear = 1;
+  optional int32 id = 2;
+  repeated MapAttrValue attrs = 3;
+}
+
+message MapAttrValue {
+  optional bool is_remove = 1;
+  optional bytes key = 2;
+  optional bytes value = 3;
+}
+
+message TempAttrCollection {
+  repeated TempAttr attrs = 1;
+}
+
+message TempAttr {
+  optional int32 id = 1;
+  optional int32 value = 2;
+}
+
+message ActorBodyPartInfos {
+  optional int64 uuid = 1;
+  repeated ActorBodyPartInfo infos = 2;
+}
+
+message ActorBodyPartInfo {
+  optional int32 part_id = 1;
+  optional uint64 hp = 2;
+  optional uint64 max_hp = 3;
+  optional BodyPartState state = 4;
+  optional int32 fleshy_id = 5;
+}
+
+message SeqPassiveSkillInfo {
+  optional int64 actor_uuid = 1;
+  repeated PassiveSkillInfo passive_infos = 2;
+}
+
+message PassiveSkillInfo {
+  optional int32 uuid = 1;
+  optional int64 target_uuid = 2;
+  optional int64 stage_begin_time = 3;
+  optional int64 begin_time = 4;
+  optional int32 stage_play_num = 5;
+  optional int32 skill_id = 6;
+  optional int32 skill_level = 7;
+  optional int32 skill_stage = 8;
+}
+
+message SeqPassiveSkillEndInfo {
+  optional int64 actor_uuid = 1;
+  repeated int64 uuids = 2;
+}
+
+message BuffInfoSync {
+  optional int64 uuid = 1;
+  repeated BuffInfo buff_infos = 2;
+}
+
+message BuffInfo {
+  optional int32 buff_uuid = 1;
+  optional int32 base_id = 2;
+  optional int32 level = 3;
+  optional int64 host_uuid = 4;
+  optional int32 table_uuid = 5;
+  optional int64 create_time = 6;
+  optional int64 fire_uuid = 7;
+  optional int32 layer = 8;
+  optional int32 part_id = 9;
+  optional int32 count = 10;
+  optional int32 duration = 11;
+  FightSourceInfo fight_source_info = 12;
+  repeated BuffEffectLogicInfo logic_effect = 13;
+}
+
+message FightSourceInfo {
+  optional int32 fight_source_type = 1;
+  optional int32 source_config_id = 2;
+}
+
+message BuffEffectLogicInfo {
+  optional EBuffEffectLogicPbType effect_type = 1;
+  optional bytes raw_data = 2;
+  optional bool is_loop = 3;
+}
+
+message BuffEffectSync {
+  optional int64 uuid = 1;
+  repeated BuffEffect buff_effects = 2;
+}
+
+message BuffEffect {
+  optional EBuffEventType type = 1;
+  optional int32 buff_uuid = 2;
+  optional int64 host_uuid = 3;
+  optional int64 trigger_time = 4;
+  repeated BuffEffectLogicInfo logic_effect = 5;
+}
+
+message FakeBulletInfo {
+  optional int32 uuid = 1;
+  optional int32 bullet_id = 2;
+  optional int64 target_id = 3;
+  optional int32 part_id = 4;
+  Vector3 offset = 5;
+  Vector3 rotate = 6;
+  optional int32 skin_id = 7;
+}
+
+message MagneticRideQueueChangeInfo {
+  optional int64 queue_uuid = 1;
+  MagneticRidePassengerChangeInfo passenger_change_info = 2;
+  MagneticRidePathPointChangeInfo path_point_change_info = 3;
+  optional bool is_circle = 4;
+  optional bool is_remove = 5;
+  optional float path_length = 6;
+}
+
+message MagneticRidePassengerChangeInfo {
+  repeated PassengerChangeParam passenger_change_list = 1;
+}
+
+message PassengerChangeParam {
+  optional bool is_add_passenger = 1;
+  optional int64 add_or_remove_uuid = 2;
+}
+
+message MagneticRidePathPointChangeInfo {
+  repeated PathPointChangeParam path_point_change_list = 1;
+}
+
+message PathPointChangeParam {
+  optional int32 operation = 1;
+  Position add_point = 2;
+  optional int32 remove_point_count = 3;
+}
+
+message Position {
+  optional float x = 1;
+  optional float y = 2;
+  optional float z = 3;
+  optional float dir = 4;
+}
+
+message AoiSyncDelta {
+  optional int64 uuid = 1;
+  AttrCollection attrs = 2;
+  TempAttrCollection temp_attrs = 3;
+  EventDataList event_data_list = 4;
+  BulletEvent bullet_event = 5;
+  ActorBodyPartInfos body_part_infos = 6;
+  SkillEffect skill_effects = 7;
+  SeqPassiveSkillInfo passive_skill_infos = 8;
+  SeqPassiveSkillEndInfo passive_skill_end_infos = 9;
+  BuffInfoSync buff_infos = 10;
+  BuffEffectSync buff_effect = 11;
+  repeated FakeBulletInfo fake_bullets = 12;
+  repeated MagneticRideQueueChangeInfo magnetic_ride_queue_change_info_list = 13;
+}
+
+message EventDataList {
+  optional int64 uuid = 1;
+  repeated EventData events = 2;
+}
+
+message EventData {
+  optional int32 event_type = 1;
+  repeated int32 int_params = 2;
+  repeated int64 long_params = 3;
+  repeated float float_params = 4;
+  repeated string str_params = 5;
+}
+
+message BulletEvent {
+  optional int64 uuid = 1;
+  optional int32 enter_stage_id = 2;
+}
+
+message SkillEffect {
+  optional int64 uuid = 1;
+  repeated SyncDamageInfo damages = 2;
+  optional int64 total_damage = 3;
+}
+
+message SyncDamageInfo {
+  optional EDamageSource damage_source = 1;
+  optional bool is_miss = 2;
+  optional bool is_crit = 3;
+  optional EDamageType type = 4;
+  optional int32 type_flag = 5;
+  optional int64 value = 6;
+  optional int64 actual_value = 7;
+  optional int64 lucky_value = 8;
+  optional int64 hp_lessen_value = 9;
+  optional int64 shield_lessen_value = 10;
+  optional int64 attacker_uuid = 11;
+  optional int32 owner_id = 12;
+  optional int32 owner_level = 13;
+  optional int32 owner_stage = 14;
+  optional int32 hit_event_id = 15;
+  optional bool is_normal = 16;
+  optional bool is_dead = 17;
+  optional EDamageProperty property = 18;
+  Vector3 damage_pos = 19;
+  repeated ClientHitPartInfo part_infos = 20;
+  optional int64 top_summoner_id = 21;
+  Vector2 damage_weight = 22;
+  optional uint32 passive_uuid = 23;
+  optional bool is_rainbow = 24;
+  optional EDamageMode damage_mode = 25;
+}
+
+message Vector3 {
+  optional float x = 1;
+  optional float y = 2;
+  optional float z = 3;
+}
+
+message ClientHitPartInfo {
+  optional int32 part_id = 1;
+  Vector3 damage_pos = 2;
+  optional int64 damage_val = 3;
+}
+
+message Vector2 {
+  optional float x = 1;
+  optional float y = 2;
+}
+
+message SyncNearDeltaInfo {
+  repeated AoiSyncDelta delta_infos = 1;
+}
+
+message SyncToMeDeltaInfo {
+  AoiSyncToMeDelta delta_info = 1;
+}
+
+message AoiSyncToMeDelta {
+  AoiSyncDelta base_delta = 1;
+  repeated int64 sync_hate_ids = 2;
+  repeated SkillCd sync_skill_c_ds = 3;
+  repeated FightResCd fight_res_c_ds = 4;
+  optional int64 uuid = 5;
+}
+
+message SkillCd {
+  optional int32 skill_level_id = 1;
+  optional int64 begin_time = 2;
+  optional int32 duration = 3;
+  optional ESkillCdType skill_cd_type = 4;
+  optional int32 valid_cd_time = 5;
+}
+
+message FightResCd {
+  optional int32 res_id = 1;
+  optional int64 begin_time = 2;
+  optional int32 duration = 3;
+  optional int32 valid_cd_time = 4;
+}
+
+message SyncContainerData {
+  optional bytes v_data = 1;
+}
+
+message SyncContainerDirtyData {
+  optional bytes v_data = 1;
+}
+
+message SyncServerTime {
+  optional int64 client_milliseconds = 1;
+  optional int64 server_milliseconds = 2;
+}
+
+enum EEntityType {
+  E_ENTITY_TYPE_ENT_ERR_TYPE = 0;
+  E_ENTITY_TYPE_ENT_MONSTER = 1;
+  E_ENTITY_TYPE_ENT_NPC = 2;
+  E_ENTITY_TYPE_ENT_SCENE_OBJECT = 3;
+  E_ENTITY_TYPE_ENT_ZONE = 5;
+  E_ENTITY_TYPE_ENT_BULLET = 6;
+  E_ENTITY_TYPE_ENT_CLIENT_BULLET = 7;
+  E_ENTITY_TYPE_ENT_PET = 8;
+  E_ENTITY_TYPE_ENT_CHAR = 10;
+  E_ENTITY_TYPE_ENT_DUMMY = 11;
+  E_ENTITY_TYPE_ENT_DROP = 12;
+  E_ENTITY_TYPE_ENT_FIELD = 14;
+  E_ENTITY_TYPE_ENT_TRAP = 15;
+  E_ENTITY_TYPE_ENT_COLLECTION = 16;
+  E_ENTITY_TYPE_ENT_STATIC_OBJECT = 18;
+  E_ENTITY_TYPE_ENT_VEHICLE = 19;
+  E_ENTITY_TYPE_ENT_TOY = 20;
+  E_ENTITY_TYPE_ENT_COMMUNITY_HOUSE = 21;
+  E_ENTITY_TYPE_ENT_HOUSE_ITEM = 22;
+  E_ENTITY_TYPE_ENT_COUNT = 23;
+}
+
+enum EAppearType {
+  E_APPEAR_TYPE_E_APPEAR_NULL = 0;
+  E_APPEAR_TYPE_E_APPEAR_TRANSFER_IN = 1;
+  E_APPEAR_TYPE_E_APPEAR_TRANSFER_PASS_LINE_IN = 2;
+}
+
+enum EDisappearType {
+  E_DISAPPEAR_TYPE_E_DISAPPEAR_NORMAL = 0;
+  E_DISAPPEAR_TYPE_E_DISAPPEAR_DEAD = 1;
+  E_DISAPPEAR_TYPE_E_DISAPPEAR_DESTROY = 2;
+  E_DISAPPEAR_TYPE_E_DISAPPEAR_TRANSFER_LEAVE = 3;
+  E_DISAPPEAR_TYPE_E_DISAPPEAR_TRANSFER_PASS_LINE_LEAVE = 4;
+}
+
+enum BodyPartState {
+  BODY_PART_STATE_DEFAULT = 0;
+  BODY_PART_STATE_INJURY = 1;
+  BODY_PART_STATE_DEAD = 2;
+}
+
+enum EDamageSource {
+  E_DAMAGE_SOURCE_SKILL = 0;
+  E_DAMAGE_SOURCE_BULLET = 1;
+  E_DAMAGE_SOURCE_BUFF = 2;
+  E_DAMAGE_SOURCE_FALL = 3;
+  E_DAMAGE_SOURCE_FAKE_BULLET = 4;
+  E_DAMAGE_SOURCE_OTHER = 100;
+}
+
+enum EDamageType {
+  E_DAMAGE_TYPE_NORMAL = 0;
+  E_DAMAGE_TYPE_MISS = 1;
+  E_DAMAGE_TYPE_HEAL = 2;
+  E_DAMAGE_TYPE_IMMUNE = 3;
+  E_DAMAGE_TYPE_FALL = 4;
+  E_DAMAGE_TYPE_ABSORBED = 5;
+}
+
+enum EDamageProperty {
+  E_DAMAGE_PROPERTY_GENERAL = 0;
+  E_DAMAGE_PROPERTY_FIRE = 1;
+  E_DAMAGE_PROPERTY_WATER = 2;
+  E_DAMAGE_PROPERTY_ELECTRICITY = 3;
+  E_DAMAGE_PROPERTY_WOOD = 4;
+  E_DAMAGE_PROPERTY_WIND = 5;
+  E_DAMAGE_PROPERTY_ROCK = 6;
+  E_DAMAGE_PROPERTY_LIGHT = 7;
+  E_DAMAGE_PROPERTY_DARK = 8;
+  E_DAMAGE_PROPERTY_COUNT = 9;
+}
+
+enum EDamageMode {
+  E_DAMAGE_MODE_DAMAGE_NORMAL = 0;
+  E_DAMAGE_MODE_DAMAGE_PHYSICAL = 1;
+  E_DAMAGE_MODE_DAMAGE_MAGICAL = 2;
+}
+
+enum EBuffEffectLogicPbType {
+  E_BUFF_EFFECT_LOGIC_PB_TYPE_PLAY_EFFECT = 0;
+  E_BUFF_EFFECT_LOGIC_PB_TYPE_GRAVITY = 1;
+  E_BUFF_EFFECT_LOGIC_PB_TYPE_PARABOLA_EFFECT = 2;
+  E_BUFF_EFFECT_LOGIC_PB_TYPE_LINKING = 3;
+  E_BUFF_EFFECT_LOGIC_PB_TYPE_CONFUSION_EFFECT = 4;
+  E_BUFF_EFFECT_LOGIC_PB_TYPE_ZOOM_SCALE = 5;
+  E_BUFF_EFFECT_LOGIC_PB_TYPE_BUFF_PROFESSION_EFFECT = 7;
+  E_BUFF_EFFECT_LOGIC_PB_TYPE_TELEPORT_BELT = 8;
+  E_BUFF_EFFECT_LOGIC_PB_TYPE_BUFF_EFFECT_RAINBOW = 9;
+  E_BUFF_EFFECT_LOGIC_PB_TYPE_BUFF_EFFECT_ATTR_HUD = 11;
+  E_BUFF_EFFECT_LOGIC_PB_TYPE_BUFF_EFFECT_STOP = 12;
+  E_BUFF_EFFECT_LOGIC_PB_TYPE_BUFF_EFFECT_PROGRESS = 13;
+  E_BUFF_EFFECT_LOGIC_PB_TYPE_BUFF_EFFECT_ENERGY_DISPLAY = 14;
+  E_BUFF_EFFECT_LOGIC_PB_TYPE_BUFF_EFFECT_STOP_ALL = 15;
+  E_BUFF_EFFECT_LOGIC_PB_TYPE_BUFF_EFFECT_LAYER_CHANGE = 16;
+  E_BUFF_EFFECT_LOGIC_PB_TYPE_TENSION = 17;
+}
+
+enum EBuffEventType {
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_UNKNOWN = 0;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_ADD_TO = 1;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_REMOVE = 2;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_REPLACE = 3;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_TIMER = 4;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_STACK_LAYER = 5;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_REMOVE_LAYER = 6;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_ON_HIT_TARGET_BEFORE = 7;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_ON_HIT_TARGET_AFTER = 8;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_ON_HITTED_BEFORE = 9;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_ON_HITTED_AFTER = 10;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_ON_REACH_MAX_LAYER = 11;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_HOST_DEATH = 12;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_ON_SKILL_HIT_AFTER = 13;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_TRIG_TIMING_AURA = 14;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_BODY_PART_DEAD = 15;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_BODY_PART_HIT = 16;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_BODY_PART_STATE_CHANGE = 17;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_ON_PART_HITTED_BEFORE = 18;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_ON_PART_HITTED_AFTER = 19;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_GRAVITATIONAL = 20;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_FIGHT_RES_CHANGE = 21;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_ON_KILL_ACTOR = 23;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_ATTR_WATCHER = 24;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_ON_HITTED_LH_BEFORE = 25;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_ON_BE_HITTED_LH_BEFORE = 26;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_ADD_BY_TARGET = 27;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_REMOVE_BY_TARGET = 28;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_IN_COMBAT_STATE = 29;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_OUT_COMBAT_STATE = 30;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_SKILL_BEGIN = 31;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_SKILL_END = 32;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_SINGING_END = 34;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_SUMMON_BUFF_ADD = 35;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_SUMMON_ENTITY = 36;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_GUIDE_END = 37;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_ON_DELAY_HIT = 39;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_TEAM_BUFF_ADD = 40;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_CHANGE_PROFESSION = 41;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_DODGE_SUCCESS = 42;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_HEAL_BEFORE = 43;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_HEAL_AFTER = 44;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_PRODUCE_HEAL_BEFORE = 45;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_PRODUCE_HEAL_AFTER = 46;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_SHIELD_BROKEN = 47;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_LINKING_START = 48;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_LINKING_END = 49;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_LINKING_WATCHER = 50;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_SUPER_ARMOR_BROKEN = 51;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_ADDED_BY_TARGET_TAG = 52;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_ADD_TO_TARGET_TAG = 53;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_ON_BE_HIT_LESSEN_HP = 57;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_ENTER_BREAKING = 58;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_TELEPORT_BELT = 59;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_ON_BE_HIT_AFTER_ONLY = 63;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_ON_HIT_AFTER_ONLY = 64;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_ON_BE_HEAL_AFTER_ONLY = 65;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_ON_HEAL_AFTER_ONLY = 66;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_HEAL_CALC_ATTR_BEFORE = 67;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_PRODUCE_HEAL_CALC_ATTR_BEFORE = 68;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_REVIVE_SUCCESS_END = 69;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_AFTER_REVIVE_FIRST_MOVE = 70;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_MONSTER_INTO_ALERT = 71;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_MONSTER_OUT_ALERT = 72;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_ON_ADD_SHIELD_CALC_BEFORE = 73;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_ON_ADD_SHIELD_BEFORE = 74;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_ON_ADD_SHIELD_AFTER = 75;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_ON_BE_ADDED_SHIELD_CALC_BEFORE = 76;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_ON_BE_ADDED_SHIELD_BEFORE = 77;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_ON_BE_ADDED_SHIELD_AFTER = 78;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_PROGRESS_WATCHER = 79;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_ON_LUCKY_DAMAGE = 80;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_SKILL_CD_END = 81;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_MOTIONLESS = 82;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_PARTICIPATE_KILL = 83;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_PROFESSION_BD_TYPE_CHANGE = 84;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_SINGING_BEGIN = 85;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_GUIDE_BEGIN = 86;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_RAND_TIMER = 87;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_INTO_FRACTURE_STATE = 88;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_TAKE_ON_RIDE = 89;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_TAKE_OFF_RIDE = 90;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_START_JUMP = 91;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_PLAY_ACTION = 92;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_PLAY_EMOTE = 93;
+  E_BUFF_EVENT_TYPE_BUFF_EVENT_CHECK = 1001;
+}
+
+enum ESkillCdType {
+  E_SKILL_CD_TYPE_E_SKILL_CD_NORMAL = 0;
+  E_SKILL_CD_TYPE_E_SKILL_CD_CHARGE = 1;
+}
