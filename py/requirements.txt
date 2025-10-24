@@ -1,0 +1,3 @@
+protobuf>=5.27
+zstandard>=0.22
+rich>=13
