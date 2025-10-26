@@ -8,7 +8,7 @@ authors = [
 license = {text = "mit"}
 readme = "README.md"
 requires-python = ">=3.11"
-keywords = ["blue-protocol", "star-resonance", "packet-analysis", "game-research", "bpsr"]
+keywords = ["packet-analysis", "reverse-engineering", "bpsr"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
@@ -41,6 +41,8 @@ dev = [
     "isort>=5.12.0",
     "mypy>=1.0.0",
     "pre-commit>=3.0.0",
+    "poethepoet>=0.25.0",
+    "safety>=3.6.2",
 ]
 gui = [
     "customtkinter>=5.0.0",
@@ -60,9 +62,9 @@ Repository = "https://github.com/JordieB/bpsr-labs.git"
 Issues = "https://github.com/JordieB/bpsr-labs/issues"
 
 [project.scripts]
-bpsr-decode = "tools.packet_decoder.cli.bpsr_decode_combat:main"
-bpsr-dps = "tools.packet_decoder.cli.bpsr_dps_reduce:main"
 bpsr-labs = "bpsr_labs.cli:main"
+bpsr-decode = "bpsr_labs.cli:decode"
+bpsr-dps = "bpsr_labs.cli:dps"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
@@ -71,6 +73,21 @@ build-backend = "poetry.core.masonry.api"
 [tool.black]
 line-length = 88
 target-version = ['py311']
+skip-string-normalization = true
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
 
 [tool.isort]
 profile = "black"
@@ -81,9 +98,23 @@ python_version = "3.11"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
+
+[tool.poe.tasks]
+decode = { script = "bpsr_labs.cli:decode", help = "Decode combat packets" }
+dps = { script = "bpsr_labs.cli:dps", help = "Calculate DPS metrics" }
+labs = { script = "bpsr_labs.cli:main", help = "Main CLI interface" }
