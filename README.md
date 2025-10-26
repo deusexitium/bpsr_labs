@@ -1,37 +1,122 @@
-# BPSR Combat Packet Decoder
+# BPSR Labs 🧪
 
-A Python tool for decoding BPSR (Blue Protocol) combat packets and extracting damage/DPS metrics from packet captures.
+**Blue Protocol Star Resonance - Research Tools and Utilities**
 
-## Features
+A comprehensive toolkit for analyzing, researching, and developing tools for Blue Protocol Star Resonance. This repository contains various utilities for packet analysis, data extraction, and game research.
 
-- **Packet Decoding**: Parse BPSR combat packets from binary capture files
-- **DPS Analysis**: Extract total damage, hit counts, and DPS calculations
-- **Skill Breakdown**: Analyze damage by skill ID and target
-- **Timing Analysis**: Calculate combat duration and sustained DPS
-
-## Quick Start
+## 🚀 Quick Start
 
 ### Installation
 
 ```bash
-# Install dependencies
-pip install -r py/requirements.txt
+# Clone the repository
+git clone https://github.com/JordieB/bpsr-labs.git
+cd bpsr-labs
+
+# Install with pip
+pip install -e .
+
+# Or install with optional dependencies
+pip install -e ".[dev,gui,analysis]"
 ```
 
 ### Basic Usage
 
 ```bash
-# Navigate to the py directory
-cd py
-
-# Decode a packet capture
-python -m cli.bpsr_decode_combat ../input.bin ../output.jsonl
+# Decode combat packets
+bpsr-decode input.bin output.jsonl
 
 # Calculate DPS metrics
-python -m cli.bpsr_dps_reduce ../output.jsonl ../dps_summary.json
+bpsr-dps output.jsonl dps_summary.json
+
+# Launch the main CLI
+bpsr-labs --help
 ```
 
-## Capturing Packets with Wireshark
+## 🛠️ Tools
+
+### 📡 Packet Decoder
+**Location**: `tools/packet_decoder/`
+
+Decode and analyze BPSR combat packets from network captures.
+
+**Features:**
+- Parse BPSR combat packets from binary capture files
+- Extract damage/DPS metrics and timing analysis
+- Skill breakdown and target analysis
+- Support for multiple message types
+
+**Usage:**
+```bash
+cd tools/packet_decoder
+python -m cli.bpsr_decode_combat ../data/captures/input.bin ../data/captures/decoded.jsonl
+python -m cli.bpsr_dps_reduce ../data/captures/decoded.jsonl ../data/captures/dps_summary.json
+```
+
+### 🔍 Data Extractor *(Coming Soon)*
+**Location**: `tools/data_extractor/`
+
+Extract and process game data from various sources.
+
+### 📊 Analytics Tools *(Coming Soon)*
+**Location**: `tools/analytics/`
+
+Advanced statistical analysis and visualization tools.
+
+### 🎮 UI Tools *(Coming Soon)*
+**Location**: `tools/ui_tools/`
+
+User-friendly graphical applications.
+
+## 📁 Repository Structure
+
+```
+bpsr-labs/
+├── tools/                     # All research tools
+│   ├── packet_decoder/       # Combat packet analysis
+│   ├── data_extractor/       # Game data mining
+│   ├── analytics/            # Statistical analysis
+│   └── ui_tools/             # GUI applications
+├── data/                     # Data storage
+│   ├── schemas/              # Protobuf schemas
+│   ├── captures/             # Sample packet captures
+│   └── game-data/            # Extracted game data
+├── docs/                     # Documentation
+│   ├── api/                  # API documentation
+│   ├── guides/               # User guides
+│   └── research/             # Technical research notes
+├── examples/                 # Usage examples
+│   ├── basic-usage/          # Simple examples
+│   └── advanced-analysis/    # Complex analysis examples
+└── tests/                    # Test suites
+    ├── unit/                 # Unit tests
+    └── integration/          # Integration tests
+```
+
+## 📖 Documentation
+
+- **[API Documentation](docs/api/)** - Complete API reference
+- **[User Guides](docs/guides/)** - Step-by-step tutorials
+- **[Research Notes](docs/research/)** - Technical findings and analysis
+
+## 🔬 Research Areas
+
+### Packet Analysis
+- Combat packet structure and decoding
+- Network protocol reverse engineering
+- Real-time packet capture and analysis
+
+### Game Data Mining
+- Asset extraction and analysis
+- Database schema reconstruction
+- Configuration file parsing
+
+### Statistical Analysis
+- Damage calculation algorithms
+- Performance metrics and optimization
+- Player behavior analysis
+
+## 🎯 Capturing Packets with Wireshark
 
 To capture combat packets from the game:
 
@@ -44,115 +129,72 @@ To capture combat packets from the game:
 7. Make sure instead of `Entire conversation`, make it filter down to just server to client (ex. `43.174.231.50:16085 >> 192.168.0.12:53097`)
 8. Click `Save as` and have it save as `whatever.bin`
 
-## Usage Examples
+## 🧪 Examples
 
-### Decode a Capture File
+### Basic Packet Analysis
+```python
+from tools.packet_decoder.py.decoder import CombatDecoder, FrameReader
 
+# Load and decode a capture file
+with open('data/captures/combat.bin', 'rb') as f:
+    data = f.read()
+
+reader = FrameReader()
+decoder = CombatDecoder()
+
+for frame in reader.iter_notify_frames(data):
+    record = decoder.decode(frame)
+    if record:
+        print(f"Method: 0x{frame.method_id:08x}, Type: {record.message_type}")
+```
+
+### DPS Analysis
+```python
+from tools.packet_decoder.py.decoder.combat_reduce import CombatReducer
+
+# Process decoded records
+reducer = CombatReducer()
+reducer.process_records(decoded_records)
+summary = reducer.summary()
+
+print(f"Total Damage: {summary['total_damage']}")
+print(f"DPS: {summary['dps']:.2f}")
+```
+
+## 🤝 Contributing
+
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+
+### Development Setup
 ```bash
-cd py
-python -m cli.bpsr_decode_combat ../runs/bpsr_s2c_stream_1.bin ../runs/python/decoded.jsonl --stats-out ../runs/python/stats.json
+# Install development dependencies
+pip install -e ".[dev]"
+
+# Run tests
+pytest
+
+# Format code
+black .
+isort .
+
+# Type checking
+mypy .
 ```
 
-### Calculate DPS Summary
+## 📄 License
 
-```bash
-cd py
-python -m cli.bpsr_dps_reduce ../runs/python/decoded.jsonl ../runs/python/dps_summary.json
-```
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-### Example Output
+## 🔗 Links
 
-```json
-{
-  "total_damage": 32190,
-  "hits": 71,
-  "crits": 0,
-  "active_duration_s": 5.01,
-  "dps": 6425.15,
-  "skills": {
-    "1404": {"damage": 9490, "hits": 15, "crits": 0},
-    "1402": {"damage": 8639, "hits": 28, "crits": 0}
-  },
-  "targets": {
-    "4718656": {"damage": 16449, "hits": 29, "crits": 0}
-  }
-}
-```
+- **Homepage**: https://github.com/JordieB/bpsr-labs
+- **Documentation**: https://github.com/JordieB/bpsr-labs/tree/main/docs
+- **Issues**: https://github.com/JordieB/bpsr-labs/issues
 
-## Output Format
+## 🏷️ Topics
 
-### Combat Metrics
+`blue-protocol` `star-resonance` `packet-analysis` `game-research` `bpsr` `network-analysis` `game-tools` `research`
 
-- **total_damage**: Total damage dealt during combat
-- **hits**: Number of successful hits
-- **crits**: Number of critical hits
-- **active_duration_s**: Combat duration in seconds
-- **dps**: Damage per second (total_damage / duration)
+---
 
-### Skill Breakdown
-
-The `skills` section shows damage statistics by skill ID:
-- **damage**: Total damage dealt by this skill
-- **hits**: Number of hits with this skill
-- **crits**: Number of critical hits with this skill
-
-### Target Breakdown
-
-The `targets` section shows damage statistics by target entity UUID:
-- **damage**: Total damage dealt to this target
-- **hits**: Number of hits on this target
-- **crits**: Number of critical hits on this target
-
-## Technical Details
-
-### Supported Message Types
-
-- **0x06**: SyncNearEntities
-- **0x15**: SyncContainerData  
-- **0x16**: SyncContainerDirtyData
-- **0x2b**: SyncServerTime
-- **0x2d**: SyncNearDeltaInfo
-- **0x2e**: SyncToMeDeltaInfo (primary for DPS calculation)
-
-### Service UID
-
-All combat packets use service UID: `0x0000000063335342`
-
-### Dependencies
-
-- `protobuf>=5.27` - Protocol buffer message decoding
-- `zstandard>=0.22` - Zstd compression support
-- `rich>=13` - CLI formatting
-
-## Repository Structure
-
-```
-bpsr-packet-sniffing-study/
-├── bundle/schema/          # Protobuf schema files
-├── py/                     # Python decoder package
-│   ├── cli/               # Command-line tools
-│   └── decoder/           # Core decoding logic
-├── runs/                  # Example captures and outputs
-└── README.md
-```
-
-## Troubleshooting
-
-### Common Issues
-
-1. **Missing Dependencies**: Run `pip install -r py/requirements.txt`
-2. **Invalid Capture File**: Ensure the file is a valid BPSR capture with combat packets
-3. **No Damage Data**: Verify the capture contains `SyncToMeDeltaInfo` messages (method 0x2e)
-
-### Debug Mode
-
-Enable verbose output for troubleshooting:
-
-```bash
-cd py
-python -m cli.bpsr_decode_combat ../input.bin ../output.jsonl --verbose
-```
-
-## License
-
-MIT License - see LICENSE file for details.
+**BPSR Labs** - Advancing Blue Protocol Star Resonance research through open-source tools and analysis.

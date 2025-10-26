@@ -1,0 +1,2 @@
+# This file ensures the data/game-data directory is tracked by git
+# while ignoring its contents

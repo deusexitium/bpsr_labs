@@ -2,6 +2,15 @@
 .vscode/
 .idea/
 .cursor/
+
+# Data files (keep structure, ignore content)
+data/captures/*.bin
+data/captures/*.jsonl
+data/captures/*.json
+data/game-data/*
+!data/game-data/.gitkeep
+
+# Output files
 *.bin
 *.jsonl
 *.json
