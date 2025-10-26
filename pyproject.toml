@@ -1,0 +1,21 @@
+[project]
+name = "bpsr-packet-sniffing-study"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Jordie",email = "jordie.r.belle@gmail.com"}
+]
+license = {text = "mit"}
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "protobuf (>=6.33.0,<7.0.0)",
+    "zstandard (>=0.25.0,<0.26.0)",
+    "rich (>=14.2.0,<15.0.0)",
+    "pydivert (>=2.1.0,<3.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

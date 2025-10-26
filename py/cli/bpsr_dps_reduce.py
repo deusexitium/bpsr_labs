@@ -6,7 +6,7 @@ import argparse
 import json
 from pathlib import Path
 
-from ..decoder.combat_reduce import reduce_file
+from decoder.combat_reduce import reduce_file
 
 
 def parse_args() -> argparse.Namespace:

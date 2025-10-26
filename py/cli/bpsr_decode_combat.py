@@ -7,7 +7,7 @@ import json
 from collections import Counter
 from pathlib import Path
 
-from ..decoder.combat_decode import CombatDecoder, FrameReader
+from decoder.combat_decode import CombatDecoder, FrameReader
 
 
 def parse_args() -> argparse.Namespace:
