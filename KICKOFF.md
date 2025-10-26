@@ -1,166 +1,176 @@
-# Protobuf Integration Kickoff
+# 🧩 Protobuf Integration Kickoff
 
-## Mission Statement
+## 🎯 Mission Statement
 
-Integrate community-discovered protobuf definitions from external repositories to create enhanced packet decoders for Blue Protocol Star Resonance combat and trading center data. This will leverage the extensive protobuf work done by the community to build more robust and comprehensive packet analysis tools.
+Integrate community-discovered protobuf definitions to power **V2 decoders** for Blue Protocol: Star Resonance (BPSR), covering both **combat logs** and **Trading Center data**. This unifies custom packet sniffing with robust, schema-driven parsing based on `.proto` files.
 
-## Required Deliverables
-
-### 1. Generated Python Protobuf Classes
-- **Location**: `bpsr_labs/packet_decoder/generated/`
-- **Source**: All discovered `.proto` files from the three submodules
-- **Organization**: Mirror the protobuf package structure
-- **Compilation**: Use protobuf compiler to generate Python classes
-
-### 2. V2 Decoder Implementations
-- **CombatDecoderV2**: Enhanced combat packet decoder using generated protobuf classes
-- **TradingDecoderV2**: Enhanced trading center decoder using generated protobuf classes
-- **Location**: `bpsr_labs/packet_decoder/decoder/`
-- **Compatibility**: Maintain existing V1 decoders for backward compatibility
-
-### 3. Development Diary
-- **Location**: `.local/dev_diary.md`
-- **Content**: Comprehensive documentation of:
-  - Discovery process for finding all `.proto` files across submodules
-  - Decisions made during implementation (why certain approaches were chosen)
-  - Challenges encountered and solutions found
-  - Lessons learned and insights gained
-  - Performance considerations and optimizations
-
-### 4. User Guide
-- **Location**: `docs/protobuf-integration-guide.md`
-- **Content**: How to use the new protobuf-based decoders
-- **Examples**: Code samples showing V1 vs V2 usage
-- **Migration**: Guide for transitioning from V1 to V2 decoders
-
-### 5. Updated Documentation
-- **README.md**: Add section about protobuf integration
-- **Architecture notes**: Document the new decoder architecture
-- **API documentation**: Update docstrings and type hints
-
-### 6. All Code and Artifacts
-- **Preservation**: All generated code, scripts, and intermediate files
-- **Repository**: Everything must be committed to the repository
-- **Organization**: Clear directory structure for all deliverables
-
-## Context and Background
-
-### Current Architecture
-The existing system (`bpsr_labs/packet_decoder/decoder/combat_decode.py`) uses:
-- Google protobuf descriptor pools
-- Hardcoded method-to-message mapping
-- Single descriptor file (`descriptor_blueprotobuf.pb`)
-- Limited to 5 known message types
-
-### Known Packet Structure
-From `refs/bpsr-logs/ARCHITECTURE.md`:
-- **Fragment Types**: Notify (0x2), FrameDown (0x6), Call, Return, Echo, FrameUp
-- **Compression**: ZSTD compression with magic header `\x28\xb5\x2f\xfd`
-- **Service UUID**: `0x0000000063335342` for game service packets
-- **Packet Structure**: Fragment length, type, service UUID, method ID, payload
-
-### Known Message Types and Opcodes
-- `0x00000006`: SyncNearEntities - entities appearing/disappearing
-- `0x00000015`: SyncContainerData - detailed player information
-- `0x00000016`: SyncContainerDirtyData - player state updates
-- `0x0000002b`: SyncServerTime - server time synchronization
-- `0x0000002d`: SyncNearDeltaInfo - nearby entity actions (damage, skills)
-- `0x0000002e`: SyncToMeDeltaInfo - local player actions
-
-### Existing Reference
-- **Current proto**: `data/schemas/bundle/schema/bluecombat.proto`
-- **Descriptor**: `data/schemas/bundle/schema/descriptor_blueprotobuf.pb`
-
-## External Sources Available
-
-### 1. StarResonanceData (`refs/StarResonanceData/`)
-- **Proto files**: `proto/` directory with extensive protobuf definitions
-- **Subdirectories**: `bokura/`, `chat/`, `zproto/`, `table_config/`
-- **Content**: Game data structures, networking protocols, table definitions
-- **Note**: Contains 280+ files in `bokura/`, 1500+ files in `zproto/`
-
-### 2. bpsr-logs (`refs/bpsr-logs/`)
-- **Architecture**: `ARCHITECTURE.md` with packet structure details
-- **Protobuf lib**: `src-tauri/src/blueprotobuf-lib/` - Rust protobuf implementation
-- **Packet processing**: `src-tauri/src/packets/` - packet handling logic
-- **Content**: Real-time DPS meter implementation with protobuf integration
-
-### 3. StarResonanceTool (`refs/StarResonanceTool/`)
-- **Proto module**: `ProtoModule.cs` - C# protobuf handling
-- **Content**: Tool for extracting and processing game data
-- **Note**: May contain additional protobuf definitions or processing logic
-
-## Critical Requirements
-
-### Exhaustive Search
-- **MANDATORY**: Search must be EXHAUSTIVE across all three submodules
-- **Files are LENGTHY**: Many files contain extensive protobuf definitions
-- **Files are NUMEROUS**: Hundreds of `.proto` files across all repositories
-- **No shortcuts**: Every `.proto` file must be discovered and catalogued
-
-### Comprehensive Integration
-- **Both combat AND trading center**: Support all packet types, not just combat
-- **All message types**: Don't limit to the 5 currently known types
-- **Future-proof**: Design for extensibility as new message types are discovered
-
-### Maintain Existing Functionality
-- **Backward compatibility**: V1 decoders must continue to work
-- **No breaking changes**: Existing CLI commands and APIs must remain functional
-- **Gradual migration**: Allow users to opt into V2 decoders
-
-## Implementation Approach
-
-### Phase 1: Discovery and Cataloguing
-1. **Exhaustive search** for all `.proto` files across all submodules
-2. **Catalogue** each file with source repository, path, and purpose
-3. **Analyze** protobuf package structure and dependencies
-4. **Document** findings in development diary
-
-### Phase 2: Organization and Compilation
-1. **Organize** protobuf files into logical groups (combat, trading, common, etc.)
-2. **Resolve** dependencies and conflicts between different protobuf definitions
-3. **Compile** all protobuf files to Python classes
-4. **Test** generated classes for correctness
-
-### Phase 3: Decoder Implementation
-1. **Design** V2 decoder architecture using generated protobuf classes
-2. **Implement** CombatDecoderV2 with enhanced capabilities
-3. **Implement** TradingDecoderV2 with enhanced capabilities
-4. **Create** comprehensive test suite
-
-### Phase 4: Documentation and Integration
-1. **Write** user guide and migration documentation
-2. **Update** README and architecture documentation
-3. **Create** examples and usage samples
-4. **Finalize** development diary with lessons learned
-
-## Success Criteria
-
-- [ ] All `.proto` files discovered and catalogued
-- [ ] Python protobuf classes generated for all definitions
-- [ ] V2 decoders implemented and tested
-- [ ] Comprehensive documentation created
-- [ ] Development diary completed with full process documentation
-- [ ] All deliverables committed to repository
-- [ ] Existing functionality preserved
-- [ ] New functionality demonstrated with examples
-
-## Getting Started
-
-1. **Explore the submodules**: Start by examining the directory structure of each submodule
-2. **Search for protobuf files**: Use tools like `find` or `grep` to locate all `.proto` files
-3. **Analyze the content**: Understand what each protobuf file defines
-4. **Plan the organization**: Decide how to structure the generated Python classes
-5. **Begin implementation**: Start with the most critical message types first
-
-## Notes
-
-- The existing `bluecombat.proto` is a good starting point for understanding the current structure
-- The bpsr-logs architecture document provides crucial context about packet structure
-- Focus on outcomes rather than specific implementation details
-- Document everything - the discovery process is as valuable as the final implementation
-- Be thorough - this is foundational work that will enable future enhancements
+This effort enables full decoding coverage of BPSR’s client-server packets — supporting combat stats, market listings, and more.
 
 ---
 
-**Remember**: This is about building a robust foundation for protobuf-based packet analysis. Take the time to do it right, document everything, and create something that will serve the community well.
+## 📦 Required Deliverables
+
+### 1. ✅ Python Protobuf Classes
+
+- **Output location**:  
+  `bpsr_labs/packet_decoder/generated/`
+- **Source**:  
+  All discovered `.proto` files from the three `ref/` submodules
+- **Structure**:  
+  Match original package/module layout (e.g., `bokura.combat`, `zproto.ui`)
+- **Compilation**:  
+  Use `protoc` to generate `.py` classes
+- **TODOs**:
+  - [ ] Compile using `--python_out`
+  - [ ] Validate that all message dependencies resolve
+
+---
+
+### 2. ✅ Decoder V2 Implementations
+
+- **Output**:  
+  `CombatDecoderV2` and `TradingDecoderV2`
+- **Location**:  
+  `bpsr_labs/packet_decoder/decoder/`
+- **Notes**:
+  - Replaces hardcoded descriptor pool logic with `.proto`-generated classes
+  - Falls back gracefully to V1 decoder if no match is found
+  - Support both Notify and FrameDown packets
+- **TODOs**:
+  - [ ] Implement combat V2 decoder
+  - [ ] Implement trading center V2 decoder
+  - [ ] Route CLI decoding to V2 if flag set
+
+---
+
+### 3. 📓 Dev Diary
+
+- **Path**: `.local/dev_diary.md`
+- **Must include**:
+  - How `.proto` files were discovered
+  - Key protobuf packages found and their purposes
+  - How conflicts or duplicate names were resolved
+  - Any unsupported wire formats or extensions
+  - Timeline, blockers, and personal insights
+
+---
+
+### 4. 📘 User Guide
+
+- **Path**: `docs/protobuf-integration-guide.md`
+- **Include**:
+  - How to run V2 decoders
+  - Before/after examples (V1 vs V2 output)
+  - Migration tips for switching pipelines
+  - Common errors and troubleshooting
+
+---
+
+### 5. 📚 Documentation Updates
+
+- [ ] Add `protobuf integration` section to `README.md`
+- [ ] Update architecture diagram with V2 decoder flow
+- [ ] Update API documentation (docstrings, Sphinx, etc.)
+- [ ] Include schema example in `examples/advanced-analysis/`
+
+---
+
+## 🧠 Background & Rationale
+
+### Current Limitations
+
+The V1 decoder:
+- Relies on hardcoded method-to-message mapping
+- Uses a single `.pb` descriptor file (`descriptor_blueprotobuf.pb`)
+- Only supports 5 message types (combat only)
+- Lacks any schema-based introspection or tooling support
+
+---
+
+## 🗂 External Repositories (Submodules in `ref/`)
+
+### 1. `StarResonanceData/`
+- Proto-rich: `proto/bokura/`, `proto/zproto/`, `proto/chat/`
+- Includes table configs, item databases, shop records
+- ⚠️ 1700+ `.proto` files — exhaustive indexing required
+
+### 2. `bpsr-logs/`
+- Rust-based decoder + protobuf loader
+- Key files:
+  - `src-tauri/src/blueprotobuf-lib/`
+  - `src-tauri/src/packets/`
+- Good reference for compression + decoding flow
+
+### 3. `StarResonanceTool/`
+- C# tooling and additional `ProtoModule.cs`
+- May contain unique message mappings or extensions
+
+---
+
+## 🔍 Known Message IDs (from `bpsr-logs/`)
+
+| Hex        | Name                    | Description                          |
+|------------|-------------------------|--------------------------------------|
+| `0x000006` | `SyncNearEntities`      | AOI entities (includes name/class)   |
+| `0x000015` | `SyncContainerData`     | Full player snapshot                 |
+| `0x000016` | `SyncContainerDirtyData`| HP, name, class updates              |
+| `0x00002b` | `SyncServerTime`        | Time sync heartbeat                  |
+| `0x00002d` | `SyncNearDeltaInfo`     | Damage + combat events               |
+| `0x00002e` | `SyncToMeDeltaInfo`     | Player-focused combat events         |
+
+You must **extend** support far beyond this — include **market, party, UI, and system messages**.
+
+---
+
+## 🛠 Implementation Plan
+
+### Phase 1: Discovery
+- [ ] Recursively search all submodules for `.proto`
+- [ ] Catalog: file path, package name, domain (combat, market, etc.)
+- [ ] Note any duplicates or version mismatches
+- [ ] Log results to dev diary
+
+### Phase 2: Generation
+- [ ] Organize and dedupe `.proto` files
+- [ ] Compile all to Python (`protoc --python_out`)
+- [ ] Output to `bpsr_labs/packet_decoder/generated/`
+- [ ] Validate generated files with test `.pb` payloads
+
+### Phase 3: Decoder Development
+- [ ] Implement `CombatDecoderV2` using generated classes
+- [ ] Implement `TradingDecoderV2` — focus on:
+  - `ExchangeSellItem`, `ExchangeRecord`, `MarketListResponse`
+- [ ] Add version fallback logic to CLI or API layer
+- [ ] Validate against `.bin` captures
+
+### Phase 4: Documentation + Cleanup
+- [ ] Complete dev diary
+- [ ] Write user guide + examples
+- [ ] Update README + code docstrings
+- [ ] Commit all artifacts
+
+---
+
+## ✅ Success Criteria
+
+- [ ] 🔍 All `.proto` files found + catalogued
+- [ ] 🧪 Python classes generated with no compile errors
+- [ ] ⚔️ V2 decoders pass integration tests
+- [ ] 📄 Clear documentation for both devs and users
+- [ ] 📦 No regressions in existing functionality
+- [ ] 🧠 Dev diary shows clear thought process + decisions
+- [ ] 🎯 New message types decoded (e.g., Trading Center packets)
+
+---
+
+## 💡 Tips
+
+- Start with **message types from known `method_id`s**
+- Use `message.txt` and `.bin` captures as golden references
+- Group proto files logically (e.g., `bokura/combat`, `zproto/trade`)
+- Preserve V1 logic — never break `CombatDecoder`, `get_dps_player_window`, etc.
+- Consider scripting the compilation step for CI/CD
+
+---
+
+> ✨ **Final Word**: This is foundational work. Done right, it future-proofs the entire decoding stack — unlocking richer analytics, wider packet support, and greater developer productivity.
