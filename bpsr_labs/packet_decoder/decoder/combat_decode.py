@@ -17,7 +17,7 @@ from google.protobuf import (
 from .framing import FrameReader, NotifyFrame
 
 SERVICE_UID = 0x0000000063335342
-_DESCRIPTOR_PATH = Path("bundle/schema/descriptor_blueprotobuf.pb")
+_DESCRIPTOR_PATH = Path(__file__).parent.parent.parent.parent / "data" / "schemas" / "bundle" / "schema" / "descriptor_blueprotobuf.pb"
 
 _METHOD_TO_MESSAGE: Dict[int, str] = {
     0x00000006: "blueprotobuf_package.SyncNearEntities",

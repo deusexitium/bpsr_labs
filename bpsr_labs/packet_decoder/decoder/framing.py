@@ -126,12 +126,19 @@ class FrameReader:
             self.zstd_flag_without_magic += 1
             return data, False
 
-        decompressor = zstandard.ZstdDecompressor()
+        # Limit decompression size to prevent resource exhaustion
+        max_decompressed_size = 10 * 1024 * 1024  # 10MB limit
+        decompressor = zstandard.ZstdDecompressor(max_window_size=2**20)  # 1MB window
         with decompressor.stream_reader(io.BytesIO(data)) as reader:
             chunks: list[bytes] = []
+            total_size = 0
             while True:
                 chunk = reader.read(16384)
                 if not chunk:
                     break
+                total_size += len(chunk)
+                if total_size > max_decompressed_size:
+                    self.resync_events += 1  # Count as resync for oversized decompression
+                    return data, False
                 chunks.append(chunk)
         return b"".join(chunks), True
