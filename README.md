@@ -42,9 +42,11 @@ poetry run bpsr-labs dps --help
 poetry run bpsr-labs trade-decode --help
 poetry run bpsr-labs update-items --help
 
-# Or use poe tasks (alternative)
-poetry run poe decode input.bin output.jsonl
-poetry run poe dps output.jsonl dps_summary.json
+# Or use individual commands (alternative)
+poetry run bpsr-decode input.bin output.jsonl
+poetry run bpsr-dps output.jsonl dps_summary.json
+poetry run bpsr-trade-decode input.bin output.json
+poetry run bpsr-update-items
 ```
 
 ## 🛠️ Tools
@@ -126,32 +128,27 @@ poetry run bpsr-update-items --source /path/to/StarResonanceData
 ```
 bpsr-labs/
 ├── bpsr_labs/                # Main package
-│   ├── packet_decoder/       # Combat packet analysis
-│   │   ├── cli/              # Command line interfaces
+│   ├── packet_decoder/       # Packet analysis tools
+│   │   ├── cli/              # Individual CLI scripts
 │   │   └── decoder/          # Core decoding logic
-│   └── cli.py                # Main CLI entry point
+│   └── cli.py                # Unified CLI entry point
 ├── data/                     # Data storage
 │   ├── schemas/              # Protobuf schemas
-│   ├── captures/             # Sample packet captures
 │   └── game-data/            # Extracted game data
 ├── docs/                     # Documentation
-│   ├── api/                  # API documentation
-│   ├── guides/               # User guides
-│   └── research/             # Technical research notes
-├── examples/                 # Usage examples
-│   ├── basic-usage/          # Simple examples
-│   └── advanced-analysis/    # Complex analysis examples
-├── .local/docs/proj/         # Project ideas and future tools
-└── tests/                    # Test suites
-    ├── unit/                 # Unit tests
-    └── integration/          # Integration tests
+│   └── packet-analysis.md    # Packet analysis guide
+├── tests/                    # Test suites
+│   ├── unit/                 # Unit tests
+│   └── integration/          # Integration tests
+├── pyproject.toml            # Project configuration
+├── poetry.lock               # Dependency lock file
+├── LICENSE                   # MIT License
+└── README.md                 # This file
 ```
 
 ## 📖 Documentation
 
-- **[API Documentation](docs/api/)** - Complete API reference
-- **[User Guides](docs/guides/)** - Step-by-step tutorials
-- **[Research Notes](docs/research/)** - Technical findings and analysis
+- **[Packet Analysis Guide](docs/packet-analysis.md)** - Complete guide for capturing and analyzing BPSR packets
 
 ## 🔬 Research Areas
 
@@ -230,7 +227,7 @@ print(f"DPS: {summary['dps']:.2f}")
 
 ## 🤝 Contributing
 
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+We welcome contributions! Please feel free to open issues or submit pull requests.
 
 ### Development Setup
 ```bash

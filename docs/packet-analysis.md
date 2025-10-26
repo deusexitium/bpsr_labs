@@ -34,20 +34,19 @@ This guide covers how to capture, decode, and analyze BPSR combat and trading ce
 
 #### Basic Decoding
 ```bash
-cd tools/packet_decoder
-python -m cli.bpsr_decode_combat ../../data/captures/combat_capture.bin ../../data/captures/decoded.jsonl
+poetry run bpsr-labs decode data/captures/combat_capture.bin data/captures/decoded.jsonl
 ```
 
 #### With Statistics
 ```bash
-python -m cli.bpsr_decode_combat ../../data/captures/combat_capture.bin ../../data/captures/decoded.jsonl --stats-out ../../data/captures/stats.json
+poetry run bpsr-labs decode data/captures/combat_capture.bin data/captures/decoded.jsonl --stats-out data/captures/stats.json
 ```
 
 ### Analyzing Combat Results
 
 #### DPS Calculation
 ```bash
-python -m cli.bpsr_dps_reduce ../../data/captures/decoded.jsonl ../../data/captures/dps_summary.json
+poetry run bpsr-labs dps data/captures/decoded.jsonl data/captures/dps_summary.json
 ```
 
 #### Understanding Combat Output
@@ -88,18 +87,17 @@ The DPS summary contains:
 
 #### Basic Decoding
 ```bash
-cd tools/packet_decoder
-python -m cli.bpsr_decode_trade ../../data/captures/trading_capture.bin ../../data/captures/trading_listings.json
+poetry run bpsr-labs trade-decode data/captures/trading_capture.bin data/captures/trading_listings.json
 ```
 
 #### With Item Name Resolution
 ```bash
-python -m cli.bpsr_decode_trade ../../data/captures/trading_capture.bin ../../data/captures/trading_listings.json
+poetry run bpsr-labs trade-decode data/captures/trading_capture.bin data/captures/trading_listings.json
 ```
 
 #### Skip Item Name Resolution (Faster)
 ```bash
-python -m cli.bpsr_decode_trade ../../data/captures/trading_capture.bin ../../data/captures/trading_listings.json --no-item-names
+poetry run bpsr-labs trade-decode data/captures/trading_capture.bin data/captures/trading_listings.json --no-item-names
 ```
 
 ### Understanding Trading Center Output
@@ -119,17 +117,17 @@ The trading listings JSON contains:
 
 #### Update Item Mappings
 ```bash
-python -m cli.bpsr_update_items --source /path/to/StarResonanceData --output data/game-data/item_name_map.json
+poetry run bpsr-labs update-items --source /path/to/StarResonanceData --output data/game-data/item_name_map.json
 ```
 
 #### Multiple Sources
 ```bash
-python -m cli.bpsr_update_items --source /path/to/source1 --source /path/to/source2 --output data/game-data/item_name_map.json
+poetry run bpsr-labs update-items --source /path/to/source1 --source /path/to/source2 --output data/game-data/item_name_map.json
 ```
 
 #### Quiet Mode
 ```bash
-python -m cli.bpsr_update_items --source /path/to/StarResonanceData --quiet
+poetry run bpsr-labs update-items --source /path/to/StarResonanceData --quiet
 ```
 
 ## Troubleshooting
@@ -143,13 +141,13 @@ python -m cli.bpsr_update_items --source /path/to/StarResonanceData --quiet
 
 #### Trading Center Analysis
 1. **No listings found**: Ensure you're browsing the trading center during capture
-2. **Missing item names**: Update item mappings using `bpsr_update_items`
+2. **Missing item names**: Update item mappings using `poetry run bpsr-labs update-items`
 3. **Empty output**: Check that FrameDown packets are present in the capture
 
 ### Debug Mode
 ```bash
-python -m cli.bpsr_decode_combat input.bin output.jsonl --verbose
-python -m cli.bpsr_decode_trade input.bin output.json --verbose
+poetry run bpsr-labs decode data/captures/input.bin data/captures/output.jsonl --verbose
+poetry run bpsr-labs trade-decode data/captures/input.bin data/captures/output.json --verbose
 ```
 
 ## Advanced Analysis
@@ -217,7 +215,6 @@ for capture_file in capture_dir.glob("*.bin"):
 
 ## Next Steps
 
-- Explore the [API Documentation](api/) for detailed function references
-- Check out [Research Notes](research/) for technical findings
-- See [Examples](../examples/) for more complex analysis scenarios
-- Review [IDEAS.md](../.local/docs/proj/IDEAS.md) for upcoming features
+- Explore the [Packet Analysis Guide](packet-analysis.md) for detailed usage instructions
+- Check out the [README](../README.md) for project overview and examples
+- Review the source code in `bpsr_labs/packet_decoder/` for implementation details
