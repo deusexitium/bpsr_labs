@@ -29,10 +29,18 @@ poetry run bpsr-labs decode input.bin output.jsonl
 # Calculate DPS metrics
 poetry run bpsr-labs dps output.jsonl dps_summary.json
 
+# Decode trading center packets
+poetry run bpsr-labs trade-decode input.bin output.json
+
+# Update item name mappings
+poetry run bpsr-labs update-items
+
 # Get help for any command
 poetry run bpsr-labs --help
 poetry run bpsr-labs decode --help
 poetry run bpsr-labs dps --help
+poetry run bpsr-labs trade-decode --help
+poetry run bpsr-labs update-items --help
 
 # Or use poe tasks (alternative)
 poetry run poe decode input.bin output.jsonl
@@ -61,6 +69,55 @@ poetry run bpsr-labs dps data/captures/decoded.jsonl data/captures/dps_summary.j
 # Or using individual commands
 poetry run bpsr-decode data/captures/input.bin data/captures/decoded.jsonl
 poetry run bpsr-dps data/captures/decoded.jsonl data/captures/dps_summary.json
+```
+
+### 🏪 Trading Center Decoder
+**Location**: `bpsr_labs/packet_decoder/decoder/trading_center_decode.py`
+
+Decode trading center listings from BPSR packet captures.
+
+**Features:**
+- Parse FrameDown packets containing trading data
+- Extract item listings with prices and quantities
+- Item name resolution using game data mappings
+- Deduplication and consolidation of listings
+
+**Usage:**
+```bash
+# Decode trading center packets
+poetry run bpsr-labs trade-decode data/captures/trading.bin data/captures/listings.json
+
+# Skip item name resolution for faster processing
+poetry run bpsr-labs trade-decode data/captures/trading.bin data/captures/listings.json --no-item-names
+
+# Or using individual command
+poetry run bpsr-trade-decode data/captures/trading.bin data/captures/listings.json
+```
+
+### 🗂️ Item Mapping Utility
+**Location**: `bpsr_labs/packet_decoder/decoder/item_catalog.py`
+
+Manage item ID to name mappings for game data.
+
+**Features:**
+- Load item mappings from multiple sources
+- Support for various JSON formats (raw mappings, ItemTable)
+- Caching and performance optimization
+- Item name resolution with icon support
+
+**Usage:**
+```bash
+# Update item mappings from Star Resonance data
+poetry run bpsr-labs update-items --source /path/to/StarResonanceData
+
+# Use multiple sources
+poetry run bpsr-labs update-items --source /path/to/source1 --source /path/to/source2
+
+# Specify output location
+poetry run bpsr-labs update-items --output data/game-data/custom_mapping.json
+
+# Or using individual command
+poetry run bpsr-update-items --source /path/to/StarResonanceData
 ```
 
 
@@ -119,7 +176,7 @@ To capture combat packets from the game:
 
 ## 🧪 Examples
 
-### Basic Packet Analysis
+### Combat Packet Analysis
 ```python
 from bpsr_labs.packet_decoder.decoder import CombatDecoder, FrameReader
 
@@ -134,6 +191,28 @@ for frame in reader.iter_notify_frames(data):
     record = decoder.decode(frame)
     if record:
         print(f"Method: 0x{frame.method_id:08x}, Type: {record.message_type}")
+```
+
+### Trading Center Analysis
+```python
+from bpsr_labs.packet_decoder.decoder.trading_center_decode import extract_listing_blocks, consolidate
+from bpsr_labs.packet_decoder.decoder.item_catalog import load_item_mapping
+
+# Load and decode trading center data
+with open('data/captures/trading.bin', 'rb') as f:
+    data = f.read()
+
+# Extract listings
+listings = extract_listing_blocks(data)
+
+# Load item mappings
+item_mapping = load_item_mapping()
+
+# Consolidate with item names
+consolidated = consolidate(listings, resolver=lambda item_id: item_mapping.get(item_id))
+
+for listing in consolidated:
+    print(f"Item: {listing.get('item_name', 'Unknown')} - Price: {listing['price_luno']} Luno")
 ```
 
 ### DPS Analysis

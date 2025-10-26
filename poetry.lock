@@ -202,6 +202,21 @@ files = [
 dev = ["backports.zoneinfo ; python_version < \"3.9\"", "freezegun (>=1.0,<2.0)", "jinja2 (>=3.0)", "pytest (>=6.0)", "pytest-cov", "pytz", "setuptools", "tzdata ; sys_platform == \"win32\""]
 
 [[package]]
+name = "bbpb"
+version = "1.4.2"
+description = "Library for working with protobuf messages without a protobuf type definition."
+optional = false
+python-versions = "<4.0,>=3.8"
+groups = ["main"]
+files = [
+    {file = "bbpb-1.4.2-py3-none-any.whl", hash = "sha256:ca5ae8c820a12616f0f33b5647d9889515b751ace5820741213fd3f85c7485c0"},
+    {file = "bbpb-1.4.2.tar.gz", hash = "sha256:03446991bc500cfc9dd2049e6cc9489979e157c5ecb793e27936ab3d579d3496"},
+]
+
+[package.dependencies]
+six = ">=1.16,<2.0"
+
+[[package]]
 name = "beautifulsoup4"
 version = "4.14.2"
 description = "Screen-scraping library"
@@ -1210,25 +1225,12 @@ woff = ["brotli (>=1.0.1) ; platform_python_implementation == \"CPython\"", "bro
 
 [[package]]
 name = "fqdn"
-version = "1.4.0"
-description = "Validate fully-qualified domain names compliant to RFC 1035 and the preferred form in RFC 3686 s. 2."
-optional = true
-python-versions = "*"
-groups = ["main"]
-markers = "python_version >= \"3.14\" and extra == \"analysis\""
-files = [
-    {file = "fqdn-1.4.0-py3-none-any.whl", hash = "sha256:e935616ae81c9c60a22267593fe8e6af68cecc68549cc71bb9bfbcbbcb383386"},
-    {file = "fqdn-1.4.0.tar.gz", hash = "sha256:30e8f2e685ce87cdace4712fd97c5d09f5e6fa519bbb66e8f188f6a7cb3a5c4e"},
-]
-
-[[package]]
-name = "fqdn"
 version = "1.5.1"
 description = "Validates fully-qualified domain names against RFC 1123, so that they are acceptable to modern bowsers"
 optional = true
 python-versions = ">=2.7, !=3.0, !=3.1, !=3.2, !=3.3, !=3.4, <4"
 groups = ["main"]
-markers = "python_version < \"3.14\" and extra == \"analysis\""
+markers = "extra == \"analysis\""
 files = [
     {file = "fqdn-1.5.1-py3-none-any.whl", hash = "sha256:3a179af3761e4df6eb2e026ff9e1a3033d3587bf980a0b1b2e1e5d08d7358014"},
     {file = "fqdn-1.5.1.tar.gz", hash = "sha256:105ed3677e767fb5ca086a0c1f4bb66ebc3c100be518f0e0d755d9eae164d89f"},
@@ -4859,5 +4861,5 @@ gui = ["Pillow", "customtkinter"]
 
 [metadata]
 lock-version = "2.1"
-python-versions = ">=3.11"
-content-hash = "11d116526b9acaaf588abb6a43fd43fc6cdd285c776fda22ac63329c3565dbff"
+python-versions = ">=3.11,<4.0"
+content-hash = "1b27fe3e077975844fb46a48b04c9cb27908cf4433dff6c72848aae816b54492"
