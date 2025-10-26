@@ -13,30 +13,36 @@ A comprehensive toolkit for analyzing, researching, and developing tools for Blu
 git clone https://github.com/JordieB/bpsr-labs.git
 cd bpsr-labs
 
-# Install with pip
-pip install -e .
+# Install with poetry
+poetry install
 
-# Or install with optional dependencies
-pip install -e ".[dev,gui,analysis]"
+# Or install with development dependencies
+poetry install --with dev
 ```
 
 ### Basic Usage
 
 ```bash
 # Decode combat packets
-bpsr-decode input.bin output.jsonl
+poetry run bpsr-labs decode input.bin output.jsonl
 
 # Calculate DPS metrics
-bpsr-dps output.jsonl dps_summary.json
+poetry run bpsr-labs dps output.jsonl dps_summary.json
 
-# Launch the main CLI
-bpsr-labs --help
+# Get help for any command
+poetry run bpsr-labs --help
+poetry run bpsr-labs decode --help
+poetry run bpsr-labs dps --help
+
+# Or use poe tasks (alternative)
+poetry run poe decode input.bin output.jsonl
+poetry run poe dps output.jsonl dps_summary.json
 ```
 
 ## 🛠️ Tools
 
 ### 📡 Packet Decoder
-**Location**: `tools/packet_decoder/`
+**Location**: `bpsr_labs/packet_decoder/`
 
 Decode and analyze BPSR combat packets from network captures.
 
@@ -48,35 +54,25 @@ Decode and analyze BPSR combat packets from network captures.
 
 **Usage:**
 ```bash
-cd tools/packet_decoder
-python -m cli.bpsr_decode_combat ../data/captures/input.bin ../data/captures/decoded.jsonl
-python -m cli.bpsr_dps_reduce ../data/captures/decoded.jsonl ../data/captures/dps_summary.json
+# Using the unified CLI (recommended)
+poetry run bpsr-labs decode data/captures/input.bin data/captures/decoded.jsonl
+poetry run bpsr-labs dps data/captures/decoded.jsonl data/captures/dps_summary.json
+
+# Or using individual commands
+poetry run bpsr-decode data/captures/input.bin data/captures/decoded.jsonl
+poetry run bpsr-dps data/captures/decoded.jsonl data/captures/dps_summary.json
 ```
 
-### 🔍 Data Extractor *(Coming Soon)*
-**Location**: `tools/data_extractor/`
-
-Extract and process game data from various sources.
-
-### 📊 Analytics Tools *(Coming Soon)*
-**Location**: `tools/analytics/`
-
-Advanced statistical analysis and visualization tools.
-
-### 🎮 UI Tools *(Coming Soon)*
-**Location**: `tools/ui_tools/`
-
-User-friendly graphical applications.
 
 ## 📁 Repository Structure
 
 ```
 bpsr-labs/
-├── tools/                     # All research tools
+├── bpsr_labs/                # Main package
 │   ├── packet_decoder/       # Combat packet analysis
-│   ├── data_extractor/       # Game data mining
-│   ├── analytics/            # Statistical analysis
-│   └── ui_tools/             # GUI applications
+│   │   ├── cli/              # Command line interfaces
+│   │   └── decoder/          # Core decoding logic
+│   └── cli.py                # Main CLI entry point
 ├── data/                     # Data storage
 │   ├── schemas/              # Protobuf schemas
 │   ├── captures/             # Sample packet captures
@@ -88,6 +84,7 @@ bpsr-labs/
 ├── examples/                 # Usage examples
 │   ├── basic-usage/          # Simple examples
 │   └── advanced-analysis/    # Complex analysis examples
+├── .local/docs/proj/         # Project ideas and future tools
 └── tests/                    # Test suites
     ├── unit/                 # Unit tests
     └── integration/          # Integration tests
@@ -106,15 +103,6 @@ bpsr-labs/
 - Network protocol reverse engineering
 - Real-time packet capture and analysis
 
-### Game Data Mining
-- Asset extraction and analysis
-- Database schema reconstruction
-- Configuration file parsing
-
-### Statistical Analysis
-- Damage calculation algorithms
-- Performance metrics and optimization
-- Player behavior analysis
 
 ## 🎯 Capturing Packets with Wireshark
 
@@ -133,7 +121,7 @@ To capture combat packets from the game:
 
 ### Basic Packet Analysis
 ```python
-from tools.packet_decoder.py.decoder import CombatDecoder, FrameReader
+from bpsr_labs.packet_decoder.decoder import CombatDecoder, FrameReader
 
 # Load and decode a capture file
 with open('data/captures/combat.bin', 'rb') as f:
@@ -150,7 +138,7 @@ for frame in reader.iter_notify_frames(data):
 
 ### DPS Analysis
 ```python
-from tools.packet_decoder.py.decoder.combat_reduce import CombatReducer
+from bpsr_labs.packet_decoder.decoder.combat_reduce import CombatReducer
 
 # Process decoded records
 reducer = CombatReducer()
@@ -168,17 +156,17 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 ### Development Setup
 ```bash
 # Install development dependencies
-pip install -e ".[dev]"
+poetry install --with dev
 
 # Run tests
-pytest
+poetry run pytest
 
 # Format code
-black .
-isort .
+poetry run black .
+poetry run isort .
 
 # Type checking
-mypy .
+poetry run mypy .
 ```
 
 ## 📄 License
@@ -193,7 +181,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🏷️ Topics
 
-`blue-protocol` `star-resonance` `packet-analysis` `game-research` `bpsr` `network-analysis` `game-tools` `research`
+`python` `protobuf` `reverse-engineering` `wireshark` `network-analysis` `game-tools` `packet-analysis` `player-tools` `packet-sniffing` `bpsr` `blue-protocol-star-resonance`
 
 ---
 
