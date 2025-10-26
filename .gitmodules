@@ -1,0 +1,9 @@
+[submodule "refs/StarResonanceData"]
+	path = refs/StarResonanceData
+	url = https://github.com/PotRooms/StarResonanceData
+[submodule "refs/bpsr-logs"]
+	path = refs/bpsr-logs
+	url = https://github.com/winjwinj/bpsr-logs
+[submodule "refs/StarResonanceTool"]
+	path = refs/StarResonanceTool
+	url = https://github.com/PotRooms/StarResonanceTool
