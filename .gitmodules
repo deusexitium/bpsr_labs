@@ -1,0 +1,3 @@
+[submodule "refs/StarResonanceData"]
+	path = refs/StarResonanceData
+	url = https://github.com/BlueSky-07/StarResonanceData.git

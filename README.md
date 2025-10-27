@@ -57,28 +57,25 @@ Static protobuf modules compiled from the community `StarResonanceData` dump are
 
 ### Setup Reference Data
 
-The protobuf generation script requires reference data from the StarResonanceData repository. These files are kept in `.local/refs/` (not tracked in git):
+The protobuf generation script requires reference data from the StarResonanceData repository. This is included as a git submodule:
 
 ```bash
-# Create the directory structure
-mkdir -p .local/refs
-
-# Clone the StarResonanceData repository
-git clone https://github.com/BlueSky-07/StarResonanceData.git .local/refs/StarResonanceData
-
-# Or manually copy the proto files to .local/refs/StarResonanceData/proto/
+# Initialize git submodules
+git submodule update --init --recursive
 ```
+
+The `StarResonanceData` repository is maintained by the community and contains the latest protobuf definitions.
 
 ### Generate Protobuf Modules
 
-Once the reference data is in place, run the helper script to generate the Python modules:
+Once the submodule is initialized, run the helper script to generate the Python modules:
 
 ```bash
 python scripts/generate_protos.py  # add --clean to wipe previous outputs
 ```
 
 The script will:
-- Validate that `.local/refs/StarResonanceData` exists
+- Validate that `refs/StarResonanceData` exists
 - Compile all `.proto` files into Python modules
 - Place generated files in `bpsr_labs/packet_decoder/generated/`
 

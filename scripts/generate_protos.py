@@ -10,7 +10,7 @@ from typing import Iterable, Sequence
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT_DIR = ROOT / "bpsr_labs" / "packet_decoder" / "generated"
-STAR_DATA = ROOT / ".local" / "refs" / "StarResonanceData" / "proto"
+STAR_DATA = ROOT / "refs" / "StarResonanceData" / "proto"
 
 PROTO_BATCHES: Sequence[tuple[Path, Sequence[str]]] = (
     (STAR_DATA / "zproto", ["."]),
@@ -83,13 +83,12 @@ def main() -> None:
     parser.add_argument("--clean", action="store_true", help="Remove previously generated modules")
     args = parser.parse_args()
 
-    # Check if .local/refs/StarResonanceData exists
+    # Check if refs/StarResonanceData exists
     if not STAR_DATA.exists():
         print(f"Error: StarResonanceData not found at {STAR_DATA}")
         print("To set up the reference data:")
-        print("1. Create the directory: mkdir -p .local/refs")
-        print("2. Clone the repository: git clone https://github.com/your-repo/StarResonanceData.git .local/refs/StarResonanceData")
-        print("3. Or manually copy the proto files to the expected location")
+        print("1. Initialize git submodules: git submodule update --init --recursive")
+        print("2. Or manually clone the repository: git clone https://github.com/BlueSky-07/StarResonanceData.git refs/StarResonanceData")
         return
 
     if args.clean:

@@ -3,8 +3,6 @@
 .idea/
 .cursor/
 .local/
-!.local/
-!.local/dev_diary.md
 
 # Data files (keep structure, ignore content)
 data/captures/*.bin
