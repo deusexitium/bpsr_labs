@@ -1,0 +1,28 @@
+[
+  {
+    "price_luno": 4500,
+    "quantity": 3,
+    "item_id": 12345,
+    "metadata": {
+      "frame_offset": 4096,
+      "server_sequence": 1337,
+      "raw_entry": {
+        "price": 4500,
+        "num": 3,
+        "itemInfo": {
+          "configId": 12345,
+          "count": 3,
+          "bindFlag": false
+        },
+        "guid": "9d9dfe8c-55a2-4fb9-b903-1b63a4514c52",
+        "noticeTime": 1739582242
+      }
+    },
+    "analysis": {
+      "item_name": "Azure Skyline Blade",
+      "unit_price_luno": 1500,
+      "estimated_tax": 225,
+      "source": "World.ExchangeNoticeDetail_Ret"
+    }
+  }
+]

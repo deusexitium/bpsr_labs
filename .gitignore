@@ -3,6 +3,8 @@
 .idea/
 .cursor/
 .local/
+!.local/
+!.local/dev_diary.md
 
 # Data files (keep structure, ignore content)
 data/captures/*.bin
@@ -17,7 +19,9 @@ data/game-data/*
 # *.txt  # temporarily allow txt files to be committed
 *.jsonl
 *.json
+!data/schemas/combat_method_map.json
 !data/game-data/item_name_map.json
+!examples/advanced-analysis/trading_listing_example.json
 *.csv
 *.log
 *.err

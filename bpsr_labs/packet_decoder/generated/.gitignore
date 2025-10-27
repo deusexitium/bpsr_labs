@@ -1,0 +1,5 @@
+# Ignore generated protobuf modules; run scripts/generate_protos.py to populate this directory.
+*
+!.gitignore
+!__init__.py
+!pb/

@@ -51,6 +51,29 @@ poetry run bpsr-update-items
 
 ## 🛠️ Tools
 
+## 🔌 Protobuf Integration
+
+Static protobuf modules compiled from the community `StarResonanceData` dump are generated locally into `bpsr_labs/packet_decoder/generated/`. The directory is ignored by git—run the helper script whenever you need to (re)build the stubs:
+
+```bash
+python scripts/generate_protos.py  # add --clean to wipe previous outputs
+```
+
+* `CombatDecoderV2` wraps the legacy descriptor pool with a configurable mapping so that combat can transition to schema-driven decoding as soon as `.proto` files surface.
+* `TradingDecoderV2` parses `World.ExchangeNoticeDetail_Ret` messages directly and warns when the protobuf modules have not been generated, automatically falling back to the heuristic V1 decoder when necessary.
+* Both CLI entry points accept `--decoder {v1,v2}` to force a specific implementation.
+
+```mermaid
+flowchart LR
+    capture[Capture File] --> reader(FrameReader)
+    reader -->|Notify| combatV2(CombatDecoderV2)
+    reader -->|FrameDown| tradeV2(TradingDecoderV2)
+    combatV2 -->|fallback| combatV1(CombatDecoder)
+    tradeV2 -->|fallback| tradeV1(Heuristic Trading Decoder)
+    combatV2 --> combatJSON[JSONL output]
+    tradeV2 --> tradeJSON[Listings JSON]
+```
+
 ### 📡 Packet Decoder
 **Location**: `bpsr_labs/packet_decoder/`
 
@@ -148,7 +171,8 @@ bpsr-labs/
 
 ## 📖 Documentation
 
-- **[Packet Analysis Guide](docs/packet-analysis.md)** - Complete guide for capturing and analyzing BPSR packets
+- **[Packet Analysis Guide](docs/packet-analysis.md)** – Complete guide for capturing and analyzing BPSR packets
+- **[Protobuf Integration Guide](docs/protobuf-integration-guide.md)** – Details on generating protobuf modules and using the V2 decoders
 
 ## 🔬 Research Areas
 
