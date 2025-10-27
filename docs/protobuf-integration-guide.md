@@ -4,19 +4,43 @@ This guide explains how to generate the statically compiled protobuf modules, us
 
 ## Generating Python Protobuf Modules
 
-1. Initialise the reference submodules if you have not already done so:
-   ```bash
-   git submodule update --init --recursive
-   ```
-2. Install the tooling dependencies:
-   ```bash
-   poetry install --with dev
-   ```
-3. Run the generator script:
-   ```bash
-   python scripts/generate_protos.py  # add --clean to wipe previous outputs
-   ```
-   The script compiles all `StarResonanceData` `.proto` files into `bpsr_labs/packet_decoder/generated/`, wiring lightweight `__init__.py` files so the modules can be imported as `import serv_world_pb2`. The directory is ignored by git, so each developer (or CI job) should run the script locally before using the V2 decoders.
+### 1. Setup Reference Data
+
+The protobuf generation script requires the StarResonanceData repository. Clone it into `.local/refs/` (not tracked in git):
+
+```bash
+# Create the directory structure
+mkdir -p .local/refs
+
+# Clone the StarResonanceData repository
+git clone https://github.com/BlueSky-07/StarResonanceData.git .local/refs/StarResonanceData
+
+# Or manually copy the proto files to .local/refs/StarResonanceData/proto/
+```
+
+**Note**: The `.local/refs/` directory is ignored by git (except for `.local/dev_diary.md`). This means:
+- The reference data is NOT tracked in your repository
+- Each developer must manually clone or copy the reference data
+- The original StarResonanceData repository is maintained by its owners
+- You can update the reference data by pulling the latest changes in `.local/refs/StarResonanceData`
+
+### 2. Install Tooling Dependencies
+
+```bash
+poetry install --with dev
+```
+
+### 3. Run the Generator Script
+
+```bash
+python scripts/generate_protos.py  # add --clean to wipe previous outputs
+```
+
+The script will:
+- Validate that `.local/refs/StarResonanceData` exists and provide setup instructions if missing
+- Compile all `StarResonanceData` `.proto` files into `bpsr_labs/packet_decoder/generated/`
+- Wire lightweight `__init__.py` files so modules can be imported as `import serv_world_pb2`
+- The generated directory is ignored by git, so each developer (or CI job) should run the script locally before using the V2 decoders
 
 Re-run the script whenever upstream `.proto` files change. The `--clean` flag removes stale artefacts before the compilation step.
 

@@ -53,11 +53,34 @@ poetry run bpsr-update-items
 
 ## 🔌 Protobuf Integration
 
-Static protobuf modules compiled from the community `StarResonanceData` dump are generated locally into `bpsr_labs/packet_decoder/generated/`. The directory is ignored by git—run the helper script whenever you need to (re)build the stubs:
+Static protobuf modules compiled from the community `StarResonanceData` dump are generated locally into `bpsr_labs/packet_decoder/generated/`. The directory is ignored by git.
+
+### Setup Reference Data
+
+The protobuf generation script requires reference data from the StarResonanceData repository. These files are kept in `.local/refs/` (not tracked in git):
+
+```bash
+# Create the directory structure
+mkdir -p .local/refs
+
+# Clone the StarResonanceData repository
+git clone https://github.com/BlueSky-07/StarResonanceData.git .local/refs/StarResonanceData
+
+# Or manually copy the proto files to .local/refs/StarResonanceData/proto/
+```
+
+### Generate Protobuf Modules
+
+Once the reference data is in place, run the helper script to generate the Python modules:
 
 ```bash
 python scripts/generate_protos.py  # add --clean to wipe previous outputs
 ```
+
+The script will:
+- Validate that `.local/refs/StarResonanceData` exists
+- Compile all `.proto` files into Python modules
+- Place generated files in `bpsr_labs/packet_decoder/generated/`
 
 * `CombatDecoderV2` wraps the legacy descriptor pool with a configurable mapping so that combat can transition to schema-driven decoding as soon as `.proto` files surface.
 * `TradingDecoderV2` parses `World.ExchangeNoticeDetail_Ret` messages directly and warns when the protobuf modules have not been generated, automatically falling back to the heuristic V1 decoder when necessary.

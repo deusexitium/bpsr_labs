@@ -10,7 +10,7 @@ from typing import Iterable, Sequence
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT_DIR = ROOT / "bpsr_labs" / "packet_decoder" / "generated"
-STAR_DATA = ROOT / "refs" / "StarResonanceData" / "proto"
+STAR_DATA = ROOT / ".local" / "refs" / "StarResonanceData" / "proto"
 
 PROTO_BATCHES: Sequence[tuple[Path, Sequence[str]]] = (
     (STAR_DATA / "zproto", ["."]),
@@ -23,20 +23,7 @@ EXTRA_FILES: Sequence[tuple[Path, Sequence[str]]] = (
     (STAR_DATA, ["table_basic.proto"]),
 )
 
-INIT_TEMPLATE = """\
-"""Generated protobuf modules for BPSR."""
-from __future__ import annotations
-
-import sys
-from pathlib import Path
-
-_pkg_dir = Path(__file__).resolve().parent
-_pkg_str = str(_pkg_dir)
-if _pkg_str not in sys.path:
-    sys.path.insert(0, _pkg_str)
-
-__all__: list[str] = []
-"""
+INIT_TEMPLATE = '"""Generated protobuf modules for BPSR."""\nfrom __future__ import annotations\n\nimport sys\nfrom pathlib import Path\n\n_pkg_dir = Path(__file__).resolve().parent\n_pkg_str = str(_pkg_dir)\nif _pkg_str not in sys.path:\n    sys.path.insert(0, _pkg_str)\n\n__all__: list[str] = []\n'
 
 PB_INIT_TEMPLATE = '"""Generated chat protobuf modules."""\n'
 
@@ -95,6 +82,15 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--clean", action="store_true", help="Remove previously generated modules")
     args = parser.parse_args()
+
+    # Check if .local/refs/StarResonanceData exists
+    if not STAR_DATA.exists():
+        print(f"Error: StarResonanceData not found at {STAR_DATA}")
+        print("To set up the reference data:")
+        print("1. Create the directory: mkdir -p .local/refs")
+        print("2. Clone the repository: git clone https://github.com/your-repo/StarResonanceData.git .local/refs/StarResonanceData")
+        print("3. Or manually copy the proto files to the expected location")
+        return
 
     if args.clean:
         clean_generated()
