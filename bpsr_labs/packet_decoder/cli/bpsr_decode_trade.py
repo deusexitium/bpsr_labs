@@ -11,6 +11,7 @@ from bpsr_labs.packet_decoder.decoder.trading_center_decode import (
     consolidate,
     extract_listing_blocks,
 )
+from bpsr_labs.packet_decoder.decoder.trading_center_decode_v2 import TradingDecoderV2
 from bpsr_labs.packet_decoder.decoder.item_catalog import load_item_mapping
 
 
@@ -19,7 +20,21 @@ from bpsr_labs.packet_decoder.decoder.item_catalog import load_item_mapping
 @click.argument('output', type=click.Path(path_type=Path))
 @click.option('--no-item-names', is_flag=True, help='Skip item name resolution')
 @click.option('--quiet', is_flag=True, help='Suppress progress output')
-def main(capture: Path, output: Path, no_item_names: bool, quiet: bool) -> int:
+@click.option(
+    '--decoder',
+    'decoder_version',
+    type=click.Choice(['v1', 'v2'], case_sensitive=False),
+    default='v2',
+    show_default=True,
+    help='Select the trading center decoder implementation',
+)
+def main(
+    capture: Path,
+    output: Path,
+    no_item_names: bool,
+    quiet: bool,
+    decoder_version: str,
+) -> int:
     """Decode BPSR trading center packets from a binary capture file."""
     # Input validation
     if not capture.exists():
@@ -35,9 +50,29 @@ def main(capture: Path, output: Path, no_item_names: bool, quiet: bool) -> int:
         click.echo(f"Error: File too large ({capture.stat().st_size} bytes). Maximum size: {max_size} bytes", err=True)
         return 1
 
+    decoder_choice = decoder_version.lower()
     try:
         raw = capture.read_bytes()
-        listings = extract_listing_blocks(raw)
+        if decoder_choice == 'v2':
+            decoder = TradingDecoderV2()
+            listings = decoder.decode_listings(raw)
+            if not decoder.available:
+                if not quiet:
+                    detail = str(decoder.import_error) if decoder.import_error else "generated protobuf modules not found"
+                    click.echo(
+                        "Warning: TradingDecoderV2 unavailable "
+                        f"({detail}). Run python scripts/generate_protos.py to compile the protobufs; "
+                        "falling back to V1 decoder.",
+                        err=True,
+                    )
+                listings = extract_listing_blocks(raw)
+                decoder_choice = 'v1'
+            elif not listings:
+                # Fall back to the heuristic decoder if the protobuf path fails to decode frames.
+                listings = extract_listing_blocks(raw)
+                decoder_choice = 'v1'
+        else:
+            listings = extract_listing_blocks(raw)
     except Exception as e:
         click.echo(f"Error: Failed to decode trading center packets: {e}", err=True)
         return 1
@@ -65,7 +100,9 @@ def main(capture: Path, output: Path, no_item_names: bool, quiet: bool) -> int:
         json.dump(consolidated, handle, indent=2, ensure_ascii=False)
 
     if not quiet:
-        click.echo(f"Decoded {len(listings)} listings, {len(consolidated)} unique entries")
+        click.echo(
+            f"Decoded {len(listings)} listings, {len(consolidated)} unique entries using {decoder_choice.upper()}"
+        )
         click.echo(f"Output written to: {output}")
     
     return 0
