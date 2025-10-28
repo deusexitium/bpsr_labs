@@ -1,1 +1,0 @@
-"""Generated chat protobuf modules."""

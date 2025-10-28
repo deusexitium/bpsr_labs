@@ -1,4 +1,0 @@
-# Ignore generated protobuf modules nested under the pb namespace.
-*
-!.gitignore
-!__init__.py
