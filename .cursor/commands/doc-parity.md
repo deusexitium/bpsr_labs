@@ -132,6 +132,7 @@ Example:
 - Self-explanatory code (`return True`)
 - Restating the code in English
 - Comments that will become outdated quickly
+- **Temporary comments**: Debug statements, work-in-progress markers, or temporary notes
 
 **Good Comment Examples:**
 ```python
@@ -162,6 +163,12 @@ for item in items:
 
 # Return the result
 return result
+
+# TODO: Fix this later
+# FIXME: This is broken
+# DEBUG: Remove this
+# TEMP: Temporary fix
+print("DEBUG: Value is", value)  # Debug statement
 ```
 
 ## Quality Checklist
@@ -192,6 +199,7 @@ return result
 - [ ] No redundant or obvious comments
 - [ ] Comments are up-to-date with code
 - [ ] Consistent style and tone
+- [ ] **No temporary comments remain**: No TODO, FIXME, DEBUG, TEMP, or work-in-progress markers
 
 ### Coverage Verification
 - [ ] All public APIs documented
@@ -218,14 +226,16 @@ return result
 3. Add docstrings to complex internal functions (>15 LOC or >2 branches)
 4. Add type hints to all function signatures
 5. Add inline comments for complex algorithms and business logic
-6. Preserve existing good documentation
+6. **Remove temporary comments**: Clean up any temporary comments, debug prints, or work-in-progress markers
+7. Preserve existing good documentation
 
 **Phase 3: Verification**
 1. Re-analyze the codebase to verify coverage
 2. Check docstring format consistency
 3. Verify type hint completeness
 4. Ensure inline comments are non-redundant
-5. Generate final coverage report
+5. **Verify no temporary comments remain**: Scan for and remove any remaining temporary comments, debug statements, or work-in-progress markers
+6. Generate final coverage report
 
 ### Tools to Use
 
@@ -234,6 +244,28 @@ return result
 - `read_file`: Examine individual files for detailed analysis
 - `search_replace`: Make precise documentation additions
 - `MultiEdit`: Make multiple related changes efficiently
+
+### Temporary Comment Detection Patterns
+
+Use these grep patterns to identify and remove temporary comments:
+- `grep -r "# TODO"` - Find TODO comments
+- `grep -r "# FIXME"` - Find FIXME comments  
+- `grep -r "# DEBUG"` - Find DEBUG comments
+- `grep -r "# TEMP"` - Find TEMP comments
+- `grep -r "print.*DEBUG"` - Find debug print statements
+- `grep -r "# XXX"` - Find XXX markers
+- `grep -r "# HACK"` - Find HACK comments
+
+### Temporary Comment Cleanup Process
+
+1. **Scan for temporary comments** using the patterns above
+2. **Evaluate each comment**:
+   - If it's a legitimate TODO for future work, convert to proper documentation
+   - If it's a temporary debug statement, remove it
+   - If it's a work-in-progress marker, complete the work or remove the marker
+   - If it's a temporary fix, either implement properly or document as a known limitation
+3. **Replace temporary comments** with proper documentation or remove them entirely
+4. **Verify no temporary comments remain** in the final codebase
 
 ### Quality Standards
 
@@ -262,4 +294,5 @@ return result
 - Inline comments are informative and non-redundant
 - Documentation follows Google style consistently
 - Coverage report shows >90% for public API, >70% for complex internal logic
+- **No temporary comments remain**: All TODO, FIXME, DEBUG, TEMP, and work-in-progress markers removed
 - No breaking changes to existing functionality
