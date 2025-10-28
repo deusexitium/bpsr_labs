@@ -1,12 +1,59 @@
 # Packet Analysis Guide
 
-This guide covers how to capture, decode, and analyze BPSR combat and trading center packets.
+This guide covers how to capture, decode, and analyze BPSR combat and trading center packets using both V1 and V2 decoders.
+
+## Table of Contents
+
+- [Prerequisites](#prerequisites)
+- [Using Protobuf V2 Decoders](#using-protobuf-v2-decoders)
+- [Combat Packet Analysis](#combat-packet-analysis)
+- [Trading Center Packet Analysis](#trading-center-packet-analysis)
+- [Advanced Analysis](#advanced-analysis)
+- [Troubleshooting](#troubleshooting)
 
 ## Prerequisites
 
 - Wireshark installed
 - Python 3.11+ with required dependencies
 - Basic understanding of network protocols
+- BPSR Labs setup complete (see [Setup Guide](setup.md))
+
+## Using Protobuf V2 Decoders
+
+### What's Different in V2
+
+The V2 decoders use strongly-typed protobuf definitions for more accurate parsing:
+
+- **Trading Center:** Parses `World.ExchangeNoticeDetail_Ret` directly
+- **Combat:** Framework ready, waiting for community schemas
+- **Automatic fallback:** V2 gracefully falls back to V1 if schemas unavailable
+
+### Enabling V2 Decoders
+
+```bash
+# Trading center with V2 (default when protobufs generated)
+poetry run bpsr-labs trade-decode --decoder v2 input.bin output.json
+
+# Combat with V2 (currently falls back to V1)
+poetry run bpsr-labs decode --decoder v2 input.bin output.jsonl
+```
+
+### Benefits of V2
+
+- Structured field names instead of numeric keys
+- Type safety and validation
+- Better error messages
+- Easier to extend with new message types
+
+### When V2 Isn't Available
+
+If you see fallback warnings:
+
+1. Ensure protobufs are generated: `poe generate-protos`
+2. Check StarResonanceData is initialized: `poe init-submodules`
+3. Verify grpcio-tools is installed: `poetry install --with dev`
+
+For more details, see [Protobuf Integration Guide](protobuf-integration-guide.md).
 
 ## Combat Packet Analysis
 
@@ -29,6 +76,8 @@ This guide covers how to capture, decode, and analyze BPSR combat and trading ce
 3. Set "Show as" to "Raw"
 4. Filter to server-to-client traffic only
 5. Save as `combat_capture.bin`
+
+> **Note:** For detailed Wireshark setup instructions, see [Setup Guide](setup.md#wireshark-packet-capture).
 
 ### Decoding Combat Packets
 
@@ -82,6 +131,8 @@ The DPS summary contains:
 3. Set "Show as" to "Raw"
 4. Filter to server-to-client traffic only
 5. Save as `trading_capture.bin`
+
+> **Note:** For detailed Wireshark setup instructions, see [Setup Guide](setup.md#wireshark-packet-capture).
 
 ### Decoding Trading Center Packets
 
@@ -152,14 +203,16 @@ poetry run bpsr-labs trade-decode data/captures/input.bin data/captures/output.j
 
 ## Advanced Analysis
 
-### Custom Processing
+For detailed code examples and advanced use cases, see [Code Examples](examples.md).
+
+### Quick Examples
+
+**Combat Analysis Pipeline:**
 ```python
 from bpsr_labs.packet_decoder.decoder import CombatDecoder, FrameReader
 from bpsr_labs.packet_decoder.decoder.combat_reduce import CombatReducer
-from bpsr_labs.packet_decoder.decoder.trading_center_decode import extract_listing_blocks, consolidate
-from bpsr_labs.packet_decoder.decoder.item_catalog import load_item_mapping
 
-# Combat analysis pipeline
+# Process combat frames
 reader = FrameReader()
 decoder = CombatDecoder()
 reducer = CombatReducer()
@@ -167,54 +220,39 @@ reducer = CombatReducer()
 with open('combat.bin', 'rb') as f:
     data = f.read()
 
-# Process combat frames
 for frame in reader.iter_notify_frames(data):
     record = decoder.decode(frame)
     if record:
-        # Custom processing here
-        print(f"Processed: {record.message_type}")
+        reducer.process_record(record.to_dict())
 
-# Generate combat summary
+# Get summary
 summary = reducer.summary()
+print(f"DPS: {summary['dps']:.1f}")
+```
 
-# Trading center analysis pipeline
+**Trading Center Analysis:**
+```python
+from bpsr_labs.packet_decoder.decoder.trading_center_decode import extract_listing_blocks, consolidate
+from bpsr_labs.packet_decoder.decoder.item_catalog import load_item_mapping
+
+# Extract and analyze listings
 with open('trading.bin', 'rb') as f:
-    trading_data = f.read()
+    data = f.read()
 
-# Extract trading listings
-listings = extract_listing_blocks(trading_data)
-
-# Load item mappings
+listings = extract_listing_blocks(data)
 item_mapping = load_item_mapping()
-
-# Consolidate with item names
 consolidated = consolidate(listings, resolver=lambda item_id: item_mapping.get(item_id))
 
-# Custom analysis
 for listing in consolidated:
     print(f"Item: {listing.get('item_name', 'Unknown')} - Price: {listing['price_luno']} Luno")
 ```
 
-### Batch Processing
-```python
-import json
-from pathlib import Path
-
-# Process multiple capture files
-capture_dir = Path("data/captures")
-for capture_file in capture_dir.glob("*.bin"):
-    if "combat" in capture_file.name:
-        # Process combat file
-        output_file = capture_file.with_suffix('.jsonl')
-        # ... combat processing
-    elif "trading" in capture_file.name:
-        # Process trading file
-        output_file = capture_file.with_suffix('.json')
-        # ... trading processing
-```
+> **More Examples:** See [Code Examples](examples.md) for comprehensive examples including data analysis with pandas, batch processing, and integration patterns.
 
 ## Next Steps
 
-- Explore the [Packet Analysis Guide](packet-analysis.md) for detailed usage instructions
-- Check out the [README](../README.md) for project overview and examples
-- Review the source code in `bpsr_labs/packet_decoder/` for implementation details
+- **[Setup Guide](setup.md)** - Complete setup and installation instructions
+- **[Command Reference](commands.md)** - Detailed CLI command documentation  
+- **[Code Examples](examples.md)** - Python usage examples and advanced patterns
+- **[Protobuf Integration](protobuf-integration-guide.md)** - V2 decoder documentation
+- **[README](../README.md)** - Project overview and quick start
