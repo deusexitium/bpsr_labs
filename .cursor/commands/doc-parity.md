@@ -132,7 +132,8 @@ Example:
 - Self-explanatory code (`return True`)
 - Restating the code in English
 - Comments that will become outdated quickly
-- **Temporary comments**: Debug statements, work-in-progress markers, or temporary notes
+- **Poorly formatted TODO comments**: Comments without author, date, or issue reference
+- **Temporary debug comments**: Debug statements, work-in-progress markers, or temporary notes
 
 **Good Comment Examples:**
 ```python
@@ -146,9 +147,14 @@ if not self._is_internal_call():
     self._validate_input(data)
 
 # Workaround for protobuf serialization bug in v3.19.0
-# TODO: Remove when upgrading to v3.20.0+
+# TODO(john.doe, 2025-01-28): Remove when upgrading to v3.20.0+. Issue #123
 if hasattr(message, '_cached_byte_size_dirty'):
     message._cached_byte_size_dirty = True
+
+# FIXME(jane.smith, 2025-01-28): Memory leak in batch processing. See Issue #456
+def process_batch(items):
+    # Implementation here
+    pass
 ```
 
 **Bad Comment Examples:**
@@ -164,10 +170,10 @@ for item in items:
 # Return the result
 return result
 
-# TODO: Fix this later
-# FIXME: This is broken
-# DEBUG: Remove this
-# TEMP: Temporary fix
+# TODO: Fix this later  # Missing author, date, issue reference
+# FIXME: This is broken  # Missing context
+# DEBUG: Remove this  # Temporary debug comment
+# TEMP: Temporary fix  # Temporary marker
 print("DEBUG: Value is", value)  # Debug statement
 ```
 
@@ -199,7 +205,8 @@ print("DEBUG: Value is", value)  # Debug statement
 - [ ] No redundant or obvious comments
 - [ ] Comments are up-to-date with code
 - [ ] Consistent style and tone
-- [ ] **No temporary comments remain**: No TODO, FIXME, DEBUG, TEMP, or work-in-progress markers
+- [ ] **TODO comments properly formatted**: All TODO/FIXME comments include author, date, and issue reference
+- [ ] **No temporary comments remain**: No DEBUG, TEMP, or work-in-progress markers without context
 
 ### Coverage Verification
 - [ ] All public APIs documented
@@ -245,27 +252,43 @@ print("DEBUG: Value is", value)  # Debug statement
 - `search_replace`: Make precise documentation additions
 - `MultiEdit`: Make multiple related changes efficiently
 
+### TODO Comment Standards
+
+**Acceptable TODO/FIXME Format:**
+```python
+# TODO(username, YYYY-MM-DD): Description. Issue #123
+# FIXME(username, YYYY-MM-DD): Description. See Issue #456
+# HACK(username, YYYY-MM-DD): Description. Related to Issue #789
+```
+
+**Required Elements:**
+- Username/author identifier
+- Date when comment was added
+- Clear description of what needs to be done
+- Reference to GitHub issue, Jira ticket, or similar
+
 ### Temporary Comment Detection Patterns
 
-Use these grep patterns to identify and remove temporary comments:
-- `grep -r "# TODO"` - Find TODO comments
-- `grep -r "# FIXME"` - Find FIXME comments  
-- `grep -r "# DEBUG"` - Find DEBUG comments
-- `grep -r "# TEMP"` - Find TEMP comments
+Use these grep patterns to identify poorly formatted or temporary comments:
+- `grep -r "# TODO:"` - Find TODO comments without author/date
+- `grep -r "# FIXME:"` - Find FIXME comments without context
+- `grep -r "# DEBUG"` - Find DEBUG comments (temporary)
+- `grep -r "# TEMP"` - Find TEMP comments (temporary)
 - `grep -r "print.*DEBUG"` - Find debug print statements
-- `grep -r "# XXX"` - Find XXX markers
-- `grep -r "# HACK"` - Find HACK comments
+- `grep -r "# XXX"` - Find XXX markers (temporary)
+- `grep -r "# HACK:"` - Find HACK comments without proper format
 
-### Temporary Comment Cleanup Process
+### TODO Comment Cleanup Process
 
-1. **Scan for temporary comments** using the patterns above
+1. **Scan for TODO/FIXME comments** using the patterns above
 2. **Evaluate each comment**:
-   - If it's a legitimate TODO for future work, convert to proper documentation
+   - If properly formatted (has author, date, issue reference), keep it
+   - If missing context, either format properly or remove it
    - If it's a temporary debug statement, remove it
    - If it's a work-in-progress marker, complete the work or remove the marker
-   - If it's a temporary fix, either implement properly or document as a known limitation
-3. **Replace temporary comments** with proper documentation or remove them entirely
-4. **Verify no temporary comments remain** in the final codebase
+3. **Convert poorly formatted TODOs** to proper format with author, date, and issue reference
+4. **Remove temporary comments** that cannot be properly formatted
+5. **Verify all remaining TODOs** follow the standard format
 
 ### Quality Standards
 
@@ -294,5 +317,6 @@ Use these grep patterns to identify and remove temporary comments:
 - Inline comments are informative and non-redundant
 - Documentation follows Google style consistently
 - Coverage report shows >90% for public API, >70% for complex internal logic
-- **No temporary comments remain**: All TODO, FIXME, DEBUG, TEMP, and work-in-progress markers removed
+- **TODO comments properly formatted**: All TODO/FIXME comments include author, date, and issue reference
+- **No temporary comments remain**: All DEBUG, TEMP, and work-in-progress markers without context removed
 - No breaking changes to existing functionality
