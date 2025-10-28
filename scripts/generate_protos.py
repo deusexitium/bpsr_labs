@@ -5,18 +5,19 @@ from __future__ import annotations
 import argparse
 import shutil
 import subprocess
+import sys
 from pathlib import Path
 from typing import Iterable, Sequence
 
 ROOT = Path(__file__).resolve().parent.parent
-OUT_DIR = ROOT / "bpsr_labs" / "packet_decoder" / "generated"
+OUT_DIR = ROOT / "src" / "bpsr_labs" / "packet_decoder" / "generated"
 STAR_DATA = ROOT / "refs" / "StarResonanceData" / "proto"
 
 PROTO_BATCHES: Sequence[tuple[Path, Sequence[str]]] = (
-    (STAR_DATA / "zproto", ["."]),
-    (STAR_DATA / "chat", ["."]),
-    (STAR_DATA / "bokura", [".", ".."]),
-    (STAR_DATA / "table_config", ["."]),
+    (STAR_DATA / "zproto", [str(STAR_DATA / "zproto")]),
+    (STAR_DATA / "chat", [str(STAR_DATA / "chat")]),
+    (STAR_DATA / "bokura", [str(STAR_DATA / "bokura"), str(STAR_DATA)]),
+    (STAR_DATA / "table_config", [str(STAR_DATA / "table_config")]),
 )
 
 EXTRA_FILES: Sequence[tuple[Path, Sequence[str]]] = (
@@ -33,24 +34,29 @@ def run_protoc(proto_paths: Iterable[Path], includes: Sequence[str]) -> None:
     if not proto_files:
         return
 
-    cmd = [
-        "python",
-        "-m",
-        "grpc_tools.protoc",
-        f"--python_out={OUT_DIR}",
-    ]
-    for include in includes:
-        cmd.append(f"-I{include}")
+    # Process files in batches to avoid Windows command line length limits
+    batch_size = 50  # Adjust based on your system
+    for i in range(0, len(proto_files), batch_size):
+        batch_files = proto_files[i:i + batch_size]
+        
+        cmd = [
+            sys.executable,
+            "-m",
+            "grpc_tools.protoc",
+            f"--python_out={OUT_DIR}",
+        ]
+        for include in includes:
+            cmd.append(f"-I{include}")
 
-    cmd.extend(str(p) for p in proto_files)
-    subprocess.run(cmd, check=True, cwd=proto_paths[0])
+        cmd.extend(str(p) for p in batch_files)
+        subprocess.run(cmd, check=True, cwd=proto_paths[0])
 
 
 def run_single(file_dir: Path, includes: Sequence[str], files: Sequence[str]) -> None:
     if not files:
         return
     cmd = [
-        "python",
+        sys.executable,
         "-m",
         "grpc_tools.protoc",
         f"--python_out={OUT_DIR}",
@@ -104,7 +110,7 @@ def main() -> None:
     for base_dir, files in EXTRA_FILES:
         if not base_dir.exists():
             continue
-        run_single(base_dir, ["."], list(files))
+        run_single(base_dir, [str(STAR_DATA)], list(files))
 
     ensure_init_files()
 

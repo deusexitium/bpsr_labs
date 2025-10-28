@@ -34,28 +34,27 @@ dependencies = [
     "seaborn>=0.12.0",
 ]
 
-[project.optional-dependencies]
-dev = [
-    "pytest>=7.0.0",
-    "pytest-cov>=4.0.0",
-    "black>=23.0.0",
-    "isort>=5.12.0",
-    "mypy>=1.0.0",
-    "pre-commit>=3.0.0",
-    "poethepoet>=0.25.0",
-    "safety>=3.6.2",
-    "grpcio-tools>=1.76.0",
-]
-gui = [
-    "customtkinter>=5.0.0",
-    "Pillow>=10.0.0",
-]
-analysis = [
-    "jupyter>=1.0.0",
-    "notebook>=6.5.0",
-    "plotly>=5.0.0",
-    "dash>=2.0.0",
-]
+[tool.poetry.group.dev.dependencies]
+pytest = ">=7.0.0"
+pytest-cov = ">=4.0.0"
+black = ">=23.0.0"
+isort = ">=5.12.0"
+mypy = ">=1.0.0"
+pre-commit = ">=3.0.0"
+poethepoet = ">=0.25.0"
+safety = ">=3.6.2"
+grpcio-tools = ">=1.76.0"
+ruff = ">=0.1.0"
+
+[tool.poetry.group.gui.dependencies]
+customtkinter = ">=5.0.0"
+Pillow = ">=10.0.0"
+
+[tool.poetry.group.analysis.dependencies]
+jupyter = ">=1.0.0"
+notebook = ">=6.5.0"
+plotly = ">=5.0.0"
+dash = ">=2.0.0"
 
 [project.urls]
 Homepage = "https://github.com/JordieB/bpsr-labs"
@@ -73,6 +72,9 @@ bpsr-update-items = "bpsr_labs.cli:update_items"
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+packages = [{include = "bpsr_labs", from = "src"}]
 
 [tool.black]
 line-length = 88
@@ -119,6 +121,34 @@ python_classes = ["Test*"]
 python_functions = ["test_*"]
 
 [tool.poe.tasks]
-decode = { script = "bpsr_labs.cli:decode", help = "Decode combat packets" }
-dps = { script = "bpsr_labs.cli:dps", help = "Calculate DPS metrics" }
-labs = { script = "bpsr_labs.cli:main", help = "Main CLI interface" }
+# Setup tasks
+init-submodules = { cmd = "git submodule update --init --recursive", help = "Initialize StarResonanceData submodule" }
+generate-protos = { shell = "poetry run python scripts/generate_protos.py", help = "Generate protobuf modules from StarResonanceData" }
+clean-protos = { shell = "poetry run python scripts/generate_protos.py --clean", help = "Clean and regenerate protobuf modules" }
+install = { cmd = "poetry install --with dev", help = "Install dependencies including dev tools" }
+update-items = { script = "bpsr_labs.cli:update_items", help = "Update item name mappings" }
+setup = { sequence = ["init-submodules", "generate-protos", "install", "update-items"], help = "Complete project setup (run this first!)" }
+
+# Testing tasks
+test = { cmd = "pytest tests/", help = "Run all tests" }
+test-unit = { cmd = "pytest tests/unit/", help = "Run unit tests only" }
+test-integration = { cmd = "pytest tests/integration/", help = "Run integration tests only" }
+test-cov = { cmd = "pytest --cov=bpsr_labs --cov-report=html --cov-report=term", help = "Run tests with coverage" }
+
+# Code quality tasks
+format = { sequence = ["_format-black", "_format-isort"], help = "Format code with black and isort" }
+_format-black = { cmd = "black src/ tests/ scripts/" }
+_format-isort = { cmd = "isort src/ tests/ scripts/" }
+lint = { cmd = "ruff check src/ tests/ scripts/", help = "Lint code with ruff" }
+typecheck = { cmd = "mypy src/", help = "Type check with mypy" }
+check = { sequence = ["format", "lint", "typecheck", "test"], help = "Run all quality checks" }
+
+# Development tasks
+decode = { script = "bpsr_labs.cli:decode", help = "Decode combat packets (alias)" }
+dps = { script = "bpsr_labs.cli:dps", help = "Calculate DPS metrics (alias)" }
+trade-decode = { script = "bpsr_labs.cli:trade_decode", help = "Decode trading center packets (alias)" }
+
+# Cleanup tasks
+clean = { sequence = ["clean-protos", "_clean-pyc", "_clean-test"], help = "Clean all generated files" }
+_clean-pyc = { cmd = "python -c \"import pathlib; [p.unlink() for p in pathlib.Path('.').rglob('*.py[co]')]; [p.rmdir() for p in pathlib.Path('.').rglob('__pycache__')]\"", help = "Remove Python cache files" }
+_clean-test = { cmd = "python -c \"import shutil; import pathlib; [shutil.rmtree(p) for p in [pathlib.Path('.pytest_cache'), pathlib.Path('htmlcov'), pathlib.Path('.coverage')] if p.exists()]\"", help = "Remove test artifacts" }
