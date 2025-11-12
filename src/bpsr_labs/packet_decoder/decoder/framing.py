@@ -22,7 +22,7 @@ import io
 import struct
 from collections import Counter
 from dataclasses import dataclass
-from typing import Generator, Iterable, Iterator, Optional
+from typing import Iterator, Optional
 
 import zstandard
 

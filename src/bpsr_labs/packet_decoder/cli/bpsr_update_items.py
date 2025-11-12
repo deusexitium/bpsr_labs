@@ -11,7 +11,6 @@ from bpsr_labs.packet_decoder.decoder.update_item_mapping import (
     _iter_candidate_files,
     _serialize,
     build_mapping_from_sources,
-    DEFAULT_PATTERNS,
     DEFAULT_SOURCE_ROOTS,
 )
 

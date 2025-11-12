@@ -160,7 +160,37 @@ def update_items(source: tuple[Path, ...], output: Path, indent: int, quiet: boo
         >>> update_items((Path('ref/StarResonanceData'),), Path('items.json'), 2, False)
         0
     """
-    return update_items_main(source, output, indent, quiet)
+    # Call the update_items_main function directly with the parameters
+    from bpsr_labs.packet_decoder.decoder.item_catalog import build_mapping_from_sources
+    import json
+    import logging
+    
+    if quiet:
+        logging.getLogger().setLevel(logging.WARNING)
+    
+    # Use default sources if none provided
+    if not source:
+        from bpsr_labs.packet_decoder.decoder.item_catalog import _DEFAULT_SEARCH_LOCATIONS
+        source = _DEFAULT_SEARCH_LOCATIONS
+    
+    try:
+        mapping = build_mapping_from_sources(source)
+        # Convert to simple dict for JSON serialization
+        simple_mapping = {str(k): v.name for k, v in mapping.items()}
+        
+        # Ensure output directory exists
+        output.parent.mkdir(parents=True, exist_ok=True)
+        
+        with open(output, 'w', encoding='utf-8') as f:
+            json.dump(simple_mapping, f, indent=indent, ensure_ascii=False)
+        
+        if not quiet:
+            print(f"Updated item mapping with {len(mapping)} entries: {output}")
+        return 0
+    except Exception as e:
+        if not quiet:
+            print(f"Error updating item mapping: {e}")
+        return 1
 
 
 @main.command()
