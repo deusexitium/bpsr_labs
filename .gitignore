@@ -4,6 +4,9 @@
 .cursor/
 .local/
 
+# Generated protobuf files
+src/bpsr_labs/packet_decoder/generated/
+
 # Data files (keep structure, ignore content)
 data/captures/*.bin
 data/captures/*.jsonl
