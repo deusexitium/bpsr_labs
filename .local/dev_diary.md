@@ -89,6 +89,27 @@
 
 **Next Steps:** Project is ready for continued development with clear guidelines for maintaining lean, functional code
 
+## 2025-01-28 17:00 - Migration to Modern MDC Format
+
+**Context:** Migrated from legacy `.cursorrules` file to modern `.cursor/rules/` MDC format following official Cursor documentation.
+
+**Approach:**
+- Researched official Cursor documentation for MDC file format
+- Created `.cursor/rules/lean-mvp-development.mdc` with proper YAML frontmatter
+- Migrated all content from legacy `.cursorrules` file
+- Deleted legacy file to avoid confusion
+- Verified existing MDC files remain unchanged
+
+**Outcome:** Success - Project now uses modern Cursor rules format
+
+**Key Learning:**
+- `.cursorrules` is legacy format, replaced by `.cursor/rules/*.mdc` files
+- MDC files use YAML frontmatter with `alwaysApply`, `description`, and optional `globs`
+- Modern format provides better organization and targeted rule application
+- Existing MDC files in project follow correct format pattern
+
+**Next Steps:** Continue using modern MDC format for all Cursor agent rules
+
 ## 2025-01-28 15:30 - TODO Comment Standards Research & Implementation
 
 **Context:** User questioned whether TODO/FIXME comments should be removed entirely, prompting research into 2025 industry best practices for these comment types.

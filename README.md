@@ -84,6 +84,7 @@ bpsr-labs/
 - **[Code Examples](docs/examples.md)** - Python usage examples
 - **[Packet Analysis Guide](docs/packet-analysis.md)** - Capturing and analyzing packets
 - **[Protobuf Integration](docs/protobuf-integration-guide.md)** - V2 decoder documentation
+- **[Poe Task Guidelines](docs/poe-task-guidelines.md)** - Task type best practices
 
 ## 🤝 Contributing
 
